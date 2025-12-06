@@ -1,0 +1,122 @@
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Images, Package, Settings, Megaphone, TrendingUp } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const Dashboard = () => {
+  const { data: slidersCount, isLoading: loadingSliders } = useQuery({
+    queryKey: ['sliders-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('sliders').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const { data: servicesCount, isLoading: loadingServices } = useQuery({
+    queryKey: ['services-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('services').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const { data: packagesCount, isLoading: loadingPackages } = useQuery({
+    queryKey: ['packages-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('packages').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const { data: announcementsCount, isLoading: loadingAnnouncements } = useQuery({
+    queryKey: ['announcements-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('announcements').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const stats = [
+    { 
+      title: 'Sliders', 
+      value: slidersCount, 
+      loading: loadingSliders, 
+      icon: Images, 
+      color: 'bg-blue-500',
+      link: '/admin/sliders'
+    },
+    { 
+      title: 'Services', 
+      value: servicesCount, 
+      loading: loadingServices, 
+      icon: Settings, 
+      color: 'bg-green-500',
+      link: '/admin/services'
+    },
+    { 
+      title: 'Packages', 
+      value: packagesCount, 
+      loading: loadingPackages, 
+      icon: Package, 
+      color: 'bg-purple-500',
+      link: '/admin/packages'
+    },
+    { 
+      title: 'Announcements', 
+      value: announcementsCount, 
+      loading: loadingAnnouncements, 
+      icon: Megaphone, 
+      color: 'bg-orange-500',
+      link: '/admin/announcements'
+    },
+  ];
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-playfair font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Welcome to Sky Icon Admin Panel</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <Card key={stat.title} className="hover:shadow-elevated transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+              <div className={`w-10 h-10 rounded-lg ${stat.color} flex items-center justify-center`}>
+                <stat.icon className="h-5 w-5 text-white" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              {stat.loading ? (
+                <Skeleton className="h-8 w-16" />
+              ) : (
+                <div className="text-3xl font-bold text-foreground">{stat.value}</div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-secondary" />
+            Quick Actions
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Use the sidebar navigation to manage your website content. You can add, edit, or remove sliders, services, packages, and announcements.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default Dashboard;
