@@ -251,7 +251,12 @@ const Auth = () => {
                   />
                   {signUpErrors.password && <p className="text-sm text-destructive">{signUpErrors.password}</p>}
                 </div>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading}
+                  onClick={() => console.log('Button clicked directly')}
+                >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Create Account
                 </Button>
