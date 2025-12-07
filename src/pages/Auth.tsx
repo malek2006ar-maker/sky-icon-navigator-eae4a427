@@ -19,11 +19,18 @@ const Auth = () => {
   const { user, signIn, signUp, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Sign In form state
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [signInErrors, setSignInErrors] = useState<{ email?: string; password?: string }>({});
+  
+  // Sign Up form state
+  const [signUpEmail, setSignUpEmail] = useState('');
+  const [signUpPassword, setSignUpPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [signUpErrors, setSignUpErrors] = useState<{ email?: string; password?: string; name?: string }>({});
+  
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string }>({});
 
   useEffect(() => {
     if (user) {
@@ -31,11 +38,11 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  const validateForm = (isSignUp: boolean) => {
-    const newErrors: { email?: string; password?: string; name?: string } = {};
+  const validateSignIn = () => {
+    const newErrors: { email?: string; password?: string } = {};
     
     try {
-      emailSchema.parse(email);
+      emailSchema.parse(signInEmail);
     } catch (e) {
       if (e instanceof z.ZodError) {
         newErrors.email = e.errors[0].message;
@@ -43,33 +50,54 @@ const Auth = () => {
     }
     
     try {
-      passwordSchema.parse(password);
+      passwordSchema.parse(signInPassword);
     } catch (e) {
       if (e instanceof z.ZodError) {
         newErrors.password = e.errors[0].message;
       }
     }
     
-    if (isSignUp) {
-      try {
-        nameSchema.parse(fullName);
-      } catch (e) {
-        if (e instanceof z.ZodError) {
-          newErrors.name = e.errors[0].message;
-        }
+    setSignInErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateSignUp = () => {
+    const newErrors: { email?: string; password?: string; name?: string } = {};
+    
+    try {
+      emailSchema.parse(signUpEmail);
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        newErrors.email = e.errors[0].message;
       }
     }
     
-    setErrors(newErrors);
+    try {
+      passwordSchema.parse(signUpPassword);
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        newErrors.password = e.errors[0].message;
+      }
+    }
+    
+    try {
+      nameSchema.parse(fullName);
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        newErrors.name = e.errors[0].message;
+      }
+    }
+    
+    setSignUpErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm(false)) return;
+    if (!validateSignIn()) return;
     
     setLoading(true);
-    const { error } = await signIn(email, password);
+    const { error } = await signIn(signInEmail, signInPassword);
     setLoading(false);
     
     if (error) {
@@ -91,10 +119,10 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm(true)) return;
+    if (!validateSignUp()) return;
     
     setLoading(true);
-    const { error } = await signUp(email, password, fullName);
+    const { error } = await signUp(signUpEmail, signUpPassword, fullName);
     setLoading(false);
     
     if (error) {
@@ -150,11 +178,11 @@ const Auth = () => {
                     id="signin-email"
                     type="email"
                     placeholder="admin@skyicon.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={errors.email ? 'border-destructive' : ''}
+                    value={signInEmail}
+                    onChange={(e) => setSignInEmail(e.target.value)}
+                    className={signInErrors.email ? 'border-destructive' : ''}
                   />
-                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                  {signInErrors.email && <p className="text-sm text-destructive">{signInErrors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signin-password">Password</Label>
@@ -162,11 +190,11 @@ const Auth = () => {
                     id="signin-password"
                     type="password"
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={errors.password ? 'border-destructive' : ''}
+                    value={signInPassword}
+                    onChange={(e) => setSignInPassword(e.target.value)}
+                    className={signInErrors.password ? 'border-destructive' : ''}
                   />
-                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                  {signInErrors.password && <p className="text-sm text-destructive">{signInErrors.password}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
@@ -185,9 +213,9 @@ const Auth = () => {
                     placeholder="Your Name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className={errors.name ? 'border-destructive' : ''}
+                    className={signUpErrors.name ? 'border-destructive' : ''}
                   />
-                  {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                  {signUpErrors.name && <p className="text-sm text-destructive">{signUpErrors.name}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
@@ -195,11 +223,11 @@ const Auth = () => {
                     id="signup-email"
                     type="email"
                     placeholder="admin@skyicon.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={errors.email ? 'border-destructive' : ''}
+                    value={signUpEmail}
+                    onChange={(e) => setSignUpEmail(e.target.value)}
+                    className={signUpErrors.email ? 'border-destructive' : ''}
                   />
-                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                  {signUpErrors.email && <p className="text-sm text-destructive">{signUpErrors.email}</p>}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
@@ -207,11 +235,11 @@ const Auth = () => {
                     id="signup-password"
                     type="password"
                     placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={errors.password ? 'border-destructive' : ''}
+                    value={signUpPassword}
+                    onChange={(e) => setSignUpPassword(e.target.value)}
+                    className={signUpErrors.password ? 'border-destructive' : ''}
                   />
-                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                  {signUpErrors.password && <p className="text-sm text-destructive">{signUpErrors.password}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
