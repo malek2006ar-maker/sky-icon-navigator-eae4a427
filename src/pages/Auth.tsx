@@ -119,10 +119,20 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateSignUp()) return;
+    console.log('Sign up clicked', { signUpEmail, signUpPassword, fullName });
     
+    const isValid = validateSignUp();
+    console.log('Validation result:', isValid, signUpErrors);
+    
+    if (!isValid) {
+      console.log('Validation failed');
+      return;
+    }
+    
+    console.log('Starting sign up...');
     setLoading(true);
     const { error } = await signUp(signUpEmail, signUpPassword, fullName);
+    console.log('Sign up result:', error);
     setLoading(false);
     
     if (error) {
