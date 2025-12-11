@@ -91,7 +91,7 @@ export const Footer = () => {
                 </strong>
                 +967 783 003 636
               </li>
-              <li>
+              <li className="text-end">
                 <strong className="block text-primary-foreground mb-1">
                   {isRTL ? 'البريد:' : 'Email:'}
                 </strong>
