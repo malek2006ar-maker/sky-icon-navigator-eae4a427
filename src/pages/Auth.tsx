@@ -255,7 +255,6 @@ const Auth = () => {
                   type="submit" 
                   className="w-full" 
                   disabled={loading}
-                  onClick={() => console.log('Button clicked directly')}
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Create Account

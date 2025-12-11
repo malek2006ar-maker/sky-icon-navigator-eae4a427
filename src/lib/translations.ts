@@ -112,7 +112,7 @@ export const translations = {
       message: 'رسالتك',
       send: 'إرسال الرسالة',
       address: 'العنوان',
-      addressValue: 'صنعاء - شارع عمران - مقابل كهرباء زوبان',
+      addressValue: 'صنعاء - شارع عمران - مقابل كهرباء ذهبان',
     },
     // Footer
     footer: {
@@ -232,7 +232,7 @@ export const translations = {
       message: 'Your Message',
       send: 'Send Message',
       address: 'Address',
-      addressValue: 'Sana\'a - Imran Street - Opposite Zuhban Electricity',
+      addressValue: 'Sana\'a - Imran Street - Opposite Dhahban Electricity',
     },
     footer: {
       about: 'Sky Icon Travel, Tourism, Hajj & Umrah Services - Your ideal partner for a special journey',
@@ -350,7 +350,7 @@ export const translations = {
       message: 'Votre Message',
       send: 'Envoyer le Message',
       address: 'Adresse',
-      addressValue: 'Sanaa - Rue Imran - En face de l\'électricité Zuhban',
+      addressValue: 'Sanaa - Rue Imran - En face de l\'électricité Dhahban',
     },
     footer: {
       about: 'Sky Icon Voyages, Tourisme, Hajj et Omra - Votre partenaire idéal pour un voyage spécial',
