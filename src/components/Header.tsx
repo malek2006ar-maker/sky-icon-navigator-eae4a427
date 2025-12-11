@@ -38,18 +38,12 @@ export const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="#home" className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold">
-              <span className="text-primary font-bold text-xl">SI</span>
-            </div>
-            <div className="hidden sm:block">
-              <h1 className={`font-playfair font-bold text-lg ${isScrolled ? 'text-primary' : 'text-primary-foreground'}`}>
-                Sky Icon
-              </h1>
-              <p className={`text-xs ${isScrolled ? 'text-muted-foreground' : 'text-primary-foreground/80'}`}>
-                {isRTL ? 'للسفر والسياحة' : 'Travel & Tourism'}
-              </p>
-            </div>
+          <a href="#home" className="flex items-center">
+            <img 
+              src="/logo.png" 
+              alt="Sky Icon - Travel & Tourism" 
+              className="h-14 sm:h-16 w-auto"
+            />
           </a>
 
           {/* Desktop Navigation */}
