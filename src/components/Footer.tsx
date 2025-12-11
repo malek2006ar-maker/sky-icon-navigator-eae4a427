@@ -84,7 +84,7 @@ export const Footer = () => {
           {/* Contact Info */}
           <div>
             <h4 className="font-bold text-lg mb-6 font-playfair">{t.footer.contactInfo}</h4>
-            <ul className="space-y-4 text-primary-foreground/80">
+            <ul className="space-y-4 text-primary-foreground/80 text-end">
               <li className="ltr-nums">
                 <strong className="block text-primary-foreground mb-1">
                   {isRTL ? 'الهاتف:' : 'Phone:'}
