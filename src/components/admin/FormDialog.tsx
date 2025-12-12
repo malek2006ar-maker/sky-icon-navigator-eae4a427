@@ -25,23 +25,23 @@ const FormDialog: React.FC<FormDialogProps> = ({
   children,
   onSubmit,
   isLoading,
-  submitLabel = 'Save',
+  submitLabel = 'حفظ',
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
         <DialogHeader>
-          <DialogTitle className="font-playfair">{title}</DialogTitle>
+          <DialogTitle className="font-playfair text-right">{title}</DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-6">
           {children}
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
+          <div className="flex justify-start gap-3 pt-4 border-t">
             <Button type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin ml-2" />}
               {submitLabel}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              إلغاء
             </Button>
           </div>
         </form>

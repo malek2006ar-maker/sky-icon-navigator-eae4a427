@@ -35,12 +35,12 @@ interface Service {
 }
 
 const iconOptions = [
-  { value: 'plane', label: 'Plane' },
-  { value: 'hotel', label: 'Hotel' },
-  { value: 'passport', label: 'Passport/Visa' },
-  { value: 'map', label: 'Map/Tours' },
-  { value: 'mosque', label: 'Mosque/Hajj' },
-  { value: 'headphones', label: 'Consultation' },
+  { value: 'plane', label: 'طائرة' },
+  { value: 'hotel', label: 'فندق' },
+  { value: 'passport', label: 'جواز سفر / تأشيرة' },
+  { value: 'map', label: 'خريطة / جولات' },
+  { value: 'mosque', label: 'مسجد / حج' },
+  { value: 'headphones', label: 'استشارات' },
 ];
 
 const defaultFormData = {
@@ -119,19 +119,19 @@ const Services = () => {
   const columns = [
     {
       key: 'icon',
-      header: 'Icon',
+      header: 'الأيقونة',
       render: (item: Service) => (
-        <Badge variant="outline">{item.icon}</Badge>
+        <Badge variant="outline">{iconOptions.find(o => o.value === item.icon)?.label || item.icon}</Badge>
       ),
     },
-    { key: 'title_en', header: 'Title (EN)' },
-    { key: 'display_order', header: 'Order' },
+    { key: 'title_ar', header: 'العنوان' },
+    { key: 'display_order', header: 'الترتيب' },
     {
       key: 'is_active',
-      header: 'Status',
+      header: 'الحالة',
       render: (item: Service) => (
         <Badge variant={item.is_active ? 'default' : 'secondary'}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'نشط' : 'غير نشط'}
         </Badge>
       ),
     },
@@ -143,13 +143,13 @@ const Services = () => {
         <div>
           <h1 className="text-3xl font-playfair font-bold text-foreground flex items-center gap-3">
             <Settings className="h-8 w-8 text-secondary" />
-            Services
+            الخدمات
           </h1>
-          <p className="text-muted-foreground mt-1">Manage your service offerings</p>
+          <p className="text-muted-foreground mt-1">إدارة خدماتك المقدمة</p>
         </div>
         <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Service
+          <Plus className="h-4 w-4 ml-2" />
+          إضافة خدمة
         </Button>
       </div>
 
@@ -165,24 +165,24 @@ const Services = () => {
       <FormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={editingItem ? 'Edit Service' : 'Add Service'}
+        title={editingItem ? 'تعديل الخدمة' : 'إضافة خدمة'}
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
         <MultilingualInput
-          label="Title"
+          label="العنوان"
           values={formData.title}
           onChange={(title) => setFormData({ ...formData, title })}
           required
         />
         <MultilingualInput
-          label="Description"
+          label="الوصف"
           values={formData.description}
           onChange={(description) => setFormData({ ...formData, description })}
           isTextarea
         />
         <div className="space-y-2">
-          <Label>Icon</Label>
+          <Label>الأيقونة</Label>
           <Select value={formData.icon} onValueChange={(icon) => setFormData({ ...formData, icon })}>
             <SelectTrigger>
               <SelectValue />
@@ -198,7 +198,7 @@ const Services = () => {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Display Order</Label>
+            <Label>ترتيب العرض</Label>
             <Input
               type="number"
               value={formData.display_order}
@@ -206,7 +206,7 @@ const Services = () => {
             />
           </div>
           <div className="flex items-center justify-between pt-6">
-            <Label>Active</Label>
+            <Label>نشط</Label>
             <Switch
               checked={formData.is_active}
               onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
@@ -216,18 +216,18 @@ const Services = () => {
       </FormDialog>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Service</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{itemToDelete?.title_en}"? This action cannot be undone.
+            <AlertDialogTitle className="text-right">حذف الخدمة</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              هل أنت متأكد من حذف "{itemToDelete?.title_ar}"؟ لا يمكن التراجع عن هذا الإجراء.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+              حذف
             </AlertDialogAction>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

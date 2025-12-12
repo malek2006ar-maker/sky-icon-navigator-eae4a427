@@ -41,15 +41,15 @@ interface Announcement {
 }
 
 const mediaTypeOptions = [
-  { value: 'image', label: 'Image' },
-  { value: 'video', label: 'Video' },
+  { value: 'image', label: 'صورة' },
+  { value: 'video', label: 'فيديو' },
 ];
 
 const announcementTypeOptions = [
-  { value: 'news', label: 'News' },
-  { value: 'offer', label: 'Special Offer' },
-  { value: 'advertisement', label: 'Advertisement' },
-  { value: 'video', label: 'Video' },
+  { value: 'news', label: 'أخبار' },
+  { value: 'offer', label: 'عرض خاص' },
+  { value: 'advertisement', label: 'إعلان' },
+  { value: 'video', label: 'فيديو' },
 ];
 
 const defaultFormData = {
@@ -143,43 +143,43 @@ const Announcements = () => {
   const columns = [
     {
       key: 'media_url',
-      header: 'Media',
+      header: 'الوسائط',
       render: (item: Announcement) => (
         item.media_url ? (
           item.media_type === 'image' ? (
             <img
               src={item.media_url}
-              alt={item.title_en}
+              alt={item.title_ar}
               className="w-20 h-12 object-cover rounded"
             />
           ) : (
-            <Badge variant="outline">Video</Badge>
+            <Badge variant="outline">فيديو</Badge>
           )
         ) : '-'
       ),
     },
-    { key: 'title_en', header: 'Title (EN)' },
+    { key: 'title_ar', header: 'العنوان' },
     {
       key: 'announcement_type',
-      header: 'Type',
+      header: 'النوع',
       render: (item: Announcement) => (
-        <Badge variant="outline" className="capitalize">{item.announcement_type}</Badge>
+        <Badge variant="outline">{announcementTypeOptions.find(o => o.value === item.announcement_type)?.label || item.announcement_type}</Badge>
       ),
     },
-    { key: 'priority', header: 'Priority' },
+    { key: 'priority', header: 'الأولوية' },
     {
       key: 'is_featured',
-      header: 'Featured',
+      header: 'مميز',
       render: (item: Announcement) => (
-        item.is_featured ? <Badge className="bg-secondary text-secondary-foreground">Featured</Badge> : '-'
+        item.is_featured ? <Badge className="bg-secondary text-secondary-foreground">مميز</Badge> : '-'
       ),
     },
     {
       key: 'is_active',
-      header: 'Status',
+      header: 'الحالة',
       render: (item: Announcement) => (
         <Badge variant={item.is_active ? 'default' : 'secondary'}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'نشط' : 'غير نشط'}
         </Badge>
       ),
     },
@@ -191,13 +191,13 @@ const Announcements = () => {
         <div>
           <h1 className="text-3xl font-playfair font-bold text-foreground flex items-center gap-3">
             <Megaphone className="h-8 w-8 text-secondary" />
-            Announcements
+            الإعلانات
           </h1>
-          <p className="text-muted-foreground mt-1">Manage promotional announcements</p>
+          <p className="text-muted-foreground mt-1">إدارة الإعلانات الترويجية</p>
         </div>
         <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Announcement
+          <Plus className="h-4 w-4 ml-2" />
+          إضافة إعلان
         </Button>
       </div>
 
@@ -213,25 +213,25 @@ const Announcements = () => {
       <FormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={editingItem ? 'Edit Announcement' : 'Add Announcement'}
+        title={editingItem ? 'تعديل الإعلان' : 'إضافة إعلان'}
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
         <MultilingualInput
-          label="Title"
+          label="العنوان"
           values={formData.title}
           onChange={(title) => setFormData({ ...formData, title })}
           required
         />
         <MultilingualInput
-          label="Description"
+          label="الوصف"
           values={formData.description}
           onChange={(description) => setFormData({ ...formData, description })}
           isTextarea
         />
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Media Type</Label>
+            <Label>نوع الوسائط</Label>
             <Select value={formData.media_type} onValueChange={(media_type) => setFormData({ ...formData, media_type })}>
               <SelectTrigger>
                 <SelectValue />
@@ -246,7 +246,7 @@ const Announcements = () => {
             </Select>
           </div>
           <div className="space-y-2">
-            <Label>Announcement Type</Label>
+            <Label>نوع الإعلان</Label>
             <Select value={formData.announcement_type} onValueChange={(announcement_type) => setFormData({ ...formData, announcement_type })}>
               <SelectTrigger>
                 <SelectValue />
@@ -262,16 +262,17 @@ const Announcements = () => {
           </div>
         </div>
         <div className="space-y-2">
-          <Label>Media URL</Label>
+          <Label>رابط الوسائط</Label>
           <Input
             value={formData.media_url}
             onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
-            placeholder={formData.media_type === 'video' ? 'YouTube embed URL' : 'https://example.com/image.jpg'}
+            placeholder={formData.media_type === 'video' ? 'رابط فيديو يوتيوب' : 'https://example.com/image.jpg'}
+            dir="ltr"
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Start Date</Label>
+            <Label>تاريخ البدء</Label>
             <Input
               type="date"
               value={formData.start_date}
@@ -279,7 +280,7 @@ const Announcements = () => {
             />
           </div>
           <div className="space-y-2">
-            <Label>End Date</Label>
+            <Label>تاريخ الانتهاء</Label>
             <Input
               type="date"
               value={formData.end_date}
@@ -289,7 +290,7 @@ const Announcements = () => {
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label>Priority</Label>
+            <Label>الأولوية</Label>
             <Input
               type="number"
               value={formData.priority}
@@ -297,14 +298,14 @@ const Announcements = () => {
             />
           </div>
           <div className="flex items-center justify-between pt-6">
-            <Label>Featured</Label>
+            <Label>مميز</Label>
             <Switch
               checked={formData.is_featured}
               onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
             />
           </div>
           <div className="flex items-center justify-between pt-6">
-            <Label>Active</Label>
+            <Label>نشط</Label>
             <Switch
               checked={formData.is_active}
               onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
@@ -314,18 +315,18 @@ const Announcements = () => {
       </FormDialog>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{itemToDelete?.title_en}"? This action cannot be undone.
+            <AlertDialogTitle className="text-right">حذف الإعلان</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              هل أنت متأكد من حذف "{itemToDelete?.title_ar}"؟ لا يمكن التراجع عن هذا الإجراء.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+              حذف
             </AlertDialogAction>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

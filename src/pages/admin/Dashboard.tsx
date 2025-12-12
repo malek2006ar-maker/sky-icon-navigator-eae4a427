@@ -40,7 +40,7 @@ const Dashboard = () => {
 
   const stats = [
     { 
-      title: 'Sliders', 
+      title: 'الشرائح', 
       value: slidersCount, 
       loading: loadingSliders, 
       icon: Images, 
@@ -48,7 +48,7 @@ const Dashboard = () => {
       link: '/admin/sliders'
     },
     { 
-      title: 'Services', 
+      title: 'الخدمات', 
       value: servicesCount, 
       loading: loadingServices, 
       icon: Settings, 
@@ -56,7 +56,7 @@ const Dashboard = () => {
       link: '/admin/services'
     },
     { 
-      title: 'Packages', 
+      title: 'الباقات', 
       value: packagesCount, 
       loading: loadingPackages, 
       icon: Package, 
@@ -64,7 +64,7 @@ const Dashboard = () => {
       link: '/admin/packages'
     },
     { 
-      title: 'Announcements', 
+      title: 'الإعلانات', 
       value: announcementsCount, 
       loading: loadingAnnouncements, 
       icon: Megaphone, 
@@ -76,8 +76,8 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-playfair font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-2">Welcome to Sky Icon Admin Panel</p>
+        <h1 className="text-3xl font-playfair font-bold text-foreground">لوحة التحكم</h1>
+        <p className="text-muted-foreground mt-2">مرحباً بك في لوحة إدارة Sky Icon</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -106,12 +106,12 @@ const Dashboard = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-secondary" />
-            Quick Actions
+            إجراءات سريعة
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            Use the sidebar navigation to manage your website content. You can add, edit, or remove sliders, services, packages, and announcements.
+            استخدم القائمة الجانبية لإدارة محتوى موقعك. يمكنك إضافة أو تعديل أو حذف الشرائح والخدمات والباقات والإعلانات.
           </p>
         </CardContent>
       </Card>
