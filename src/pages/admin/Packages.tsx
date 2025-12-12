@@ -44,9 +44,9 @@ interface PackageItem {
 }
 
 const categoryOptions = [
-  { value: 'hajj', label: 'Hajj' },
-  { value: 'umrah', label: 'Umrah' },
-  { value: 'tourism', label: 'Tourism' },
+  { value: 'hajj', label: 'حج' },
+  { value: 'umrah', label: 'عمرة' },
+  { value: 'tourism', label: 'سياحة' },
 ];
 
 const defaultFormData = {
@@ -148,37 +148,37 @@ const Packages = () => {
   const columns = [
     {
       key: 'image_url',
-      header: 'Image',
+      header: 'الصورة',
       render: (item: PackageItem) => (
         <img
           src={item.image_url}
-          alt={item.title_en}
+          alt={item.title_ar}
           className="w-20 h-12 object-cover rounded"
         />
       ),
     },
-    { key: 'title_en', header: 'Title (EN)' },
-    { key: 'price', header: 'Price' },
+    { key: 'title_ar', header: 'العنوان' },
+    { key: 'price', header: 'السعر' },
     {
       key: 'category',
-      header: 'Category',
+      header: 'الفئة',
       render: (item: PackageItem) => (
-        <Badge variant="outline" className="capitalize">{item.category}</Badge>
+        <Badge variant="outline">{categoryOptions.find(o => o.value === item.category)?.label || item.category}</Badge>
       ),
     },
     {
       key: 'is_featured',
-      header: 'Featured',
+      header: 'مميز',
       render: (item: PackageItem) => (
-        item.is_featured ? <Badge className="bg-secondary text-secondary-foreground">Featured</Badge> : '-'
+        item.is_featured ? <Badge className="bg-secondary text-secondary-foreground">مميز</Badge> : '-'
       ),
     },
     {
       key: 'is_active',
-      header: 'Status',
+      header: 'الحالة',
       render: (item: PackageItem) => (
         <Badge variant={item.is_active ? 'default' : 'secondary'}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'نشط' : 'غير نشط'}
         </Badge>
       ),
     },
@@ -190,13 +190,13 @@ const Packages = () => {
         <div>
           <h1 className="text-3xl font-playfair font-bold text-foreground flex items-center gap-3">
             <Package className="h-8 w-8 text-secondary" />
-            Packages
+            الباقات
           </h1>
-          <p className="text-muted-foreground mt-1">Manage travel packages</p>
+          <p className="text-muted-foreground mt-1">إدارة باقات السفر</p>
         </div>
         <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Package
+          <Plus className="h-4 w-4 ml-2" />
+          إضافة باقة
         </Button>
       </div>
 
@@ -212,34 +212,35 @@ const Packages = () => {
       <FormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={editingItem ? 'Edit Package' : 'Add Package'}
+        title={editingItem ? 'تعديل الباقة' : 'إضافة باقة'}
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
         <MultilingualInput
-          label="Title"
+          label="العنوان"
           values={formData.title}
           onChange={(title) => setFormData({ ...formData, title })}
           required
         />
         <MultilingualInput
-          label="Description"
+          label="الوصف"
           values={formData.description}
           onChange={(description) => setFormData({ ...formData, description })}
           isTextarea
         />
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Price <span className="text-destructive">*</span></Label>
+            <Label>السعر <span className="text-destructive">*</span></Label>
             <Input
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               placeholder="$999"
               required
+              dir="ltr"
             />
           </div>
           <div className="space-y-2">
-            <Label>Category</Label>
+            <Label>الفئة</Label>
             <Select value={formData.category} onValueChange={(category) => setFormData({ ...formData, category })}>
               <SelectTrigger>
                 <SelectValue />
@@ -255,29 +256,30 @@ const Packages = () => {
           </div>
         </div>
         <MultilingualInput
-          label="Duration"
+          label="المدة"
           values={formData.duration}
           onChange={(duration) => setFormData({ ...formData, duration })}
           required
         />
         <div className="space-y-2">
-          <Label>Image URL <span className="text-destructive">*</span></Label>
+          <Label>رابط الصورة <span className="text-destructive">*</span></Label>
           <Input
             value={formData.image_url}
             onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
             placeholder="https://example.com/image.jpg"
             required
+            dir="ltr"
           />
         </div>
         <MultilingualInput
-          label="Features (one per line)"
+          label="المميزات (واحدة في كل سطر)"
           values={formData.features}
           onChange={(features) => setFormData({ ...formData, features })}
           isTextarea
         />
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label>Display Order</Label>
+            <Label>ترتيب العرض</Label>
             <Input
               type="number"
               value={formData.display_order}
@@ -285,14 +287,14 @@ const Packages = () => {
             />
           </div>
           <div className="flex items-center justify-between pt-6">
-            <Label>Featured</Label>
+            <Label>مميز</Label>
             <Switch
               checked={formData.is_featured}
               onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
             />
           </div>
           <div className="flex items-center justify-between pt-6">
-            <Label>Active</Label>
+            <Label>نشط</Label>
             <Switch
               checked={formData.is_active}
               onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
@@ -302,18 +304,18 @@ const Packages = () => {
       </FormDialog>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Package</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{itemToDelete?.title_en}"? This action cannot be undone.
+            <AlertDialogTitle className="text-right">حذف الباقة</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              هل أنت متأكد من حذف "{itemToDelete?.title_ar}"؟ لا يمكن التراجع عن هذا الإجراء.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+              حذف
             </AlertDialogAction>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

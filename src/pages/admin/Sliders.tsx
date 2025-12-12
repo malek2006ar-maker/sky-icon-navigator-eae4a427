@@ -121,23 +121,23 @@ const Sliders = () => {
   const columns = [
     {
       key: 'image_url',
-      header: 'Image',
+      header: 'الصورة',
       render: (item: Slider) => (
         <img
           src={item.image_url}
-          alt={item.title_en}
+          alt={item.title_ar}
           className="w-20 h-12 object-cover rounded"
         />
       ),
     },
-    { key: 'title_en', header: 'Title (EN)' },
-    { key: 'display_order', header: 'Order' },
+    { key: 'title_ar', header: 'العنوان' },
+    { key: 'display_order', header: 'الترتيب' },
     {
       key: 'is_active',
-      header: 'Status',
+      header: 'الحالة',
       render: (item: Slider) => (
         <Badge variant={item.is_active ? 'default' : 'secondary'}>
-          {item.is_active ? 'Active' : 'Inactive'}
+          {item.is_active ? 'نشط' : 'غير نشط'}
         </Badge>
       ),
     },
@@ -149,13 +149,13 @@ const Sliders = () => {
         <div>
           <h1 className="text-3xl font-playfair font-bold text-foreground flex items-center gap-3">
             <Images className="h-8 w-8 text-secondary" />
-            Sliders
+            الشرائح
           </h1>
-          <p className="text-muted-foreground mt-1">Manage homepage hero sliders</p>
+          <p className="text-muted-foreground mt-1">إدارة شرائح الصفحة الرئيسية</p>
         </div>
         <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Slider
+          <Plus className="h-4 w-4 ml-2" />
+          إضافة شريحة
         </Button>
       </div>
 
@@ -171,46 +171,48 @@ const Sliders = () => {
       <FormDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        title={editingItem ? 'Edit Slider' : 'Add Slider'}
+        title={editingItem ? 'تعديل الشريحة' : 'إضافة شريحة'}
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
         <MultilingualInput
-          label="Title"
+          label="العنوان"
           values={formData.title}
           onChange={(title) => setFormData({ ...formData, title })}
           required
         />
         <MultilingualInput
-          label="Subtitle"
+          label="العنوان الفرعي"
           values={formData.subtitle}
           onChange={(subtitle) => setFormData({ ...formData, subtitle })}
         />
         <div className="space-y-2">
-          <Label>Image URL <span className="text-destructive">*</span></Label>
+          <Label>رابط الصورة <span className="text-destructive">*</span></Label>
           <Input
             value={formData.image_url}
             onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
             placeholder="https://example.com/image.jpg"
             required
+            dir="ltr"
           />
         </div>
         <MultilingualInput
-          label="Button Text"
+          label="نص الزر"
           values={formData.button_text}
           onChange={(button_text) => setFormData({ ...formData, button_text })}
         />
         <div className="space-y-2">
-          <Label>Button Link</Label>
+          <Label>رابط الزر</Label>
           <Input
             value={formData.button_link}
             onChange={(e) => setFormData({ ...formData, button_link: e.target.value })}
             placeholder="#packages"
+            dir="ltr"
           />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Display Order</Label>
+            <Label>ترتيب العرض</Label>
             <Input
               type="number"
               value={formData.display_order}
@@ -218,7 +220,7 @@ const Sliders = () => {
             />
           </div>
           <div className="flex items-center justify-between pt-6">
-            <Label>Active</Label>
+            <Label>نشط</Label>
             <Switch
               checked={formData.is_active}
               onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
@@ -228,18 +230,18 @@ const Sliders = () => {
       </FormDialog>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Slider</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{itemToDelete?.title_en}"? This action cannot be undone.
+            <AlertDialogTitle className="text-right">حذف الشريحة</AlertDialogTitle>
+            <AlertDialogDescription className="text-right">
+              هل أنت متأكد من حذف "{itemToDelete?.title_ar}"؟ لا يمكن التراجع عن هذا الإجراء.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-row-reverse gap-2">
             <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
-              Delete
+              حذف
             </AlertDialogAction>
+            <AlertDialogCancel>إلغاء</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

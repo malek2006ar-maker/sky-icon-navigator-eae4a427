@@ -43,7 +43,7 @@ const MultilingualInput: React.FC<MultilingualInputProps> = ({
             value={values.ar}
             onChange={(e) => handleChange('ar', e.target.value)}
             dir="rtl"
-            placeholder={`${label} (Arabic)`}
+            placeholder={`${label} (عربي)`}
             required={required}
           />
         </TabsContent>
@@ -51,6 +51,7 @@ const MultilingualInput: React.FC<MultilingualInputProps> = ({
           <InputComponent
             value={values.en}
             onChange={(e) => handleChange('en', e.target.value)}
+            dir="ltr"
             placeholder={`${label} (English)`}
             required={required}
           />
@@ -59,7 +60,8 @@ const MultilingualInput: React.FC<MultilingualInputProps> = ({
           <InputComponent
             value={values.fr}
             onChange={(e) => handleChange('fr', e.target.value)}
-            placeholder={`${label} (French)`}
+            dir="ltr"
+            placeholder={`${label} (Français)`}
             required={required}
           />
         </TabsContent>

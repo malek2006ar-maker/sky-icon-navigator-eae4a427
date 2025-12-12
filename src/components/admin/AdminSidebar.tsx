@@ -15,11 +15,11 @@ import {
 import { Button } from '@/components/ui/button';
 
 const navItems = [
-  { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
-  { to: '/admin/sliders', icon: Images, label: 'Sliders' },
-  { to: '/admin/services', icon: Settings, label: 'Services' },
-  { to: '/admin/packages', icon: Package, label: 'Packages' },
-  { to: '/admin/announcements', icon: Megaphone, label: 'Announcements' },
+  { to: '/admin', icon: LayoutDashboard, label: 'لوحة التحكم', end: true },
+  { to: '/admin/sliders', icon: Images, label: 'الشرائح' },
+  { to: '/admin/services', icon: Settings, label: 'الخدمات' },
+  { to: '/admin/packages', icon: Package, label: 'الباقات' },
+  { to: '/admin/announcements', icon: Megaphone, label: 'الإعلانات' },
 ];
 
 const AdminSidebar = () => {
@@ -40,7 +40,7 @@ const AdminSidebar = () => {
           </div>
           <div>
             <h1 className="font-playfair font-bold text-lg">Sky Icon</h1>
-            <p className="text-xs text-primary-foreground/70">Admin Panel</p>
+            <p className="text-xs text-primary-foreground/70">لوحة الإدارة</p>
           </div>
         </div>
       </div>
@@ -72,12 +72,12 @@ const AdminSidebar = () => {
           className="w-full justify-start text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
           onClick={() => navigate('/')}
         >
-          <Home className="h-5 w-5 mr-3" />
-          View Website
+          <Home className="h-5 w-5 ml-3" />
+          عرض الموقع
         </Button>
         
         <div className="px-4 py-2 text-xs text-primary-foreground/60">
-          Signed in as<br />
+          مسجل الدخول كـ<br />
           <span className="text-primary-foreground/80 truncate block">{user?.email}</span>
         </div>
         
@@ -86,8 +86,8 @@ const AdminSidebar = () => {
           className="w-full justify-start text-primary-foreground/80 hover:text-destructive hover:bg-destructive/10"
           onClick={handleSignOut}
         >
-          <LogOut className="h-5 w-5 mr-3" />
-          Sign Out
+          <LogOut className="h-5 w-5 ml-3" />
+          تسجيل الخروج
         </Button>
       </div>
     </aside>

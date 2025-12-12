@@ -48,7 +48,7 @@ function DataTable<T extends { id: string; is_active?: boolean }>({
   if (data.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        No items found. Create your first item to get started.
+        لا توجد عناصر. أنشئ عنصرك الأول للبدء.
       </div>
     );
   }
@@ -59,11 +59,11 @@ function DataTable<T extends { id: string; is_active?: boolean }>({
         <TableHeader>
           <TableRow className="bg-muted/50">
             {columns.map((column) => (
-              <TableHead key={String(column.key)} className="font-semibold">
+              <TableHead key={String(column.key)} className="font-semibold text-right">
                 {column.header}
               </TableHead>
             ))}
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead className="text-left">الإجراءات</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -76,14 +76,14 @@ function DataTable<T extends { id: string; is_active?: boolean }>({
                     : String((item as Record<string, unknown>)[column.key as string] ?? '')}
                 </TableCell>
               ))}
-              <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
+              <TableCell className="text-left">
+                <div className="flex items-center justify-start gap-2">
                   {onToggleActive && 'is_active' in item && (
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => onToggleActive(item)}
-                      title={item.is_active ? 'Deactivate' : 'Activate'}
+                      title={item.is_active ? 'إلغاء التفعيل' : 'تفعيل'}
                     >
                       {item.is_active ? (
                         <Eye className="h-4 w-4 text-green-600" />
@@ -97,6 +97,7 @@ function DataTable<T extends { id: string; is_active?: boolean }>({
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(item)}
+                      title="تعديل"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -107,6 +108,7 @@ function DataTable<T extends { id: string; is_active?: boolean }>({
                       size="icon"
                       onClick={() => onDelete(item)}
                       className="text-destructive hover:text-destructive"
+                      title="حذف"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

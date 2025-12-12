@@ -20,7 +20,7 @@ const AdminLayout = () => {
   }
 
   return (
-    <div className="min-h-screen flex bg-muted">
+    <div className="min-h-screen flex flex-row-reverse bg-muted" dir="rtl">
       <AdminSidebar />
       <main className="flex-1 p-8 overflow-auto">
         <Outlet />
