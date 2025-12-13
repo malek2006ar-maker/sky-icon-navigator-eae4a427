@@ -10,7 +10,8 @@ import {
   Megaphone,
   LogOut,
   Plane,
-  Home
+  Home,
+  Image as ImageIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -20,6 +21,7 @@ const navItems = [
   { to: '/admin/services', icon: Settings, label: 'الخدمات' },
   { to: '/admin/packages', icon: Package, label: 'الباقات' },
   { to: '/admin/announcements', icon: Megaphone, label: 'الإعلانات' },
+  { to: '/admin/gallery', icon: ImageIcon, label: 'معرض الصور' },
 ];
 
 const AdminSidebar = () => {

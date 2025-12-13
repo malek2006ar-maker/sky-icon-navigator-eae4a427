@@ -74,6 +74,45 @@ export type Database = {
         }
         Relationships: []
       }
+      gallery: {
+        Row: {
+          category: string
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+          is_active: boolean
+          title_ar: string
+          title_en: string
+          title_fr: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+          is_active?: boolean
+          title_ar: string
+          title_en: string
+          title_fr: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          title_ar?: string
+          title_en?: string
+          title_fr?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       packages: {
         Row: {
           category: string

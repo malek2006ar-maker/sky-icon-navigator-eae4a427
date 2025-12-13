@@ -3,7 +3,10 @@ import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
+// Fallback images
 import galleryMeccaHotel from '@/assets/gallery-mecca-hotel.jpg';
 import galleryJordan from '@/assets/gallery-jordan.jpg';
 import galleryMalaysia from '@/assets/gallery-malaysia.jpg';
@@ -11,20 +14,61 @@ import galleryThaiTemple from '@/assets/gallery-thai-temple.jpg';
 import galleryMedina from '@/assets/gallery-medina.jpg';
 import galleryFlight from '@/assets/gallery-flight.jpg';
 
+interface GalleryItem {
+  id: string;
+  title_ar: string;
+  title_en: string;
+  title_fr: string;
+  category: string;
+  image_url: string;
+  display_order: number;
+  is_active: boolean;
+}
+
+const fallbackImages = [
+  { src: galleryMeccaHotel, category: 'hajj-umrah', alt: 'Luxury hotel with Kaaba view' },
+  { src: galleryMedina, category: 'hajj-umrah', alt: 'Pilgrims at Medina' },
+  { src: galleryJordan, category: 'tourism', alt: 'Petra Treasury, Jordan' },
+  { src: galleryMalaysia, category: 'tourism', alt: 'Petronas Towers, Malaysia' },
+  { src: galleryThaiTemple, category: 'tourism', alt: 'Thai Temple at sunset' },
+  { src: galleryFlight, category: 'tourism', alt: 'Business class flight' },
+];
+
 export const GallerySection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const images = [
-    { src: galleryMeccaHotel, category: 'hajj-umrah', alt: 'Luxury hotel with Kaaba view' },
-    { src: galleryMedina, category: 'hajj-umrah', alt: 'Pilgrims at Medina' },
-    { src: galleryJordan, category: 'tourism', alt: 'Petra Treasury, Jordan' },
-    { src: galleryMalaysia, category: 'tourism', alt: 'Petronas Towers, Malaysia' },
-    { src: galleryThaiTemple, category: 'tourism', alt: 'Thai Temple at sunset' },
-    { src: galleryFlight, category: 'tourism', alt: 'Business class flight' },
-  ];
+  const { data: galleryItems } = useQuery({
+    queryKey: ['gallery'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('gallery')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as GalleryItem[];
+    },
+  });
+
+  const getTitle = (item: GalleryItem) => {
+    switch (language) {
+      case 'ar': return item.title_ar;
+      case 'fr': return item.title_fr;
+      default: return item.title_en;
+    }
+  };
+
+  const images = galleryItems && galleryItems.length > 0
+    ? galleryItems.map(item => ({
+        src: item.image_url,
+        category: item.category,
+        alt: getTitle(item),
+      }))
+    : fallbackImages;
 
   return (
     <>
