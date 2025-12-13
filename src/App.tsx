@@ -13,6 +13,7 @@ import Sliders from "./pages/admin/Sliders";
 import Services from "./pages/admin/Services";
 import Packages from "./pages/admin/Packages";
 import Announcements from "./pages/admin/Announcements";
+import Gallery from "./pages/admin/Gallery";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="services" element={<Services />} />
               <Route path="packages" element={<Packages />} />
               <Route path="announcements" element={<Announcements />} />
+              <Route path="gallery" element={<Gallery />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
