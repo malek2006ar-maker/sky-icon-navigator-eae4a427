@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
 import DataTable from '@/components/admin/DataTable';
 import FormDialog from '@/components/admin/FormDialog';
@@ -10,8 +10,9 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Image as ImageIcon, X } from 'lucide-react';
+import { Plus, Image as ImageIcon, X, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { compressImage } from '@/lib/imageCompression';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -58,6 +59,56 @@ const Gallery = () => {
   const [itemToDelete, setItemToDelete] = useState<GalleryItem | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
   const [uploading, setUploading] = useState(false);
+  const [translating, setTranslating] = useState(false);
+
+  // Auto-translate Arabic text to English and French
+  const translateText = useCallback(async (arabicText: string) => {
+    if (!arabicText.trim()) return;
+    
+    setTranslating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('translate', {
+        body: { text: arabicText, targetLanguages: ['en', 'fr'] }
+      });
+
+      if (error) throw error;
+
+      if (data?.translations) {
+        setFormData(prev => ({
+          ...prev,
+          title: {
+            ...prev.title,
+            en: data.translations.en || prev.title.en,
+            fr: data.translations.fr || prev.title.fr,
+          }
+        }));
+        toast({
+          title: 'تمت الترجمة',
+          description: 'تم ترجمة النص للإنجليزية والفرنسية تلقائياً',
+        });
+      }
+    } catch (error: any) {
+      console.error('Translation error:', error);
+      // Silent fail - user can still enter translations manually
+    } finally {
+      setTranslating(false);
+    }
+  }, [toast]);
+
+  // Handle Arabic text change with auto-translation
+  const handleTitleChange = useCallback((values: { ar: string; en: string; fr: string }) => {
+    const prevAr = formData.title.ar;
+    setFormData(prev => ({ ...prev, title: values }));
+    
+    // Auto-translate when Arabic text changes and is not empty
+    if (values.ar !== prevAr && values.ar.trim() && !values.en && !values.fr) {
+      // Debounce translation
+      const timeoutId = setTimeout(() => {
+        translateText(values.ar);
+      }, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [formData.title.ar, translateText]);
 
   const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -72,23 +123,17 @@ const Gallery = () => {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: 'خطأ',
-        description: 'حجم الصورة يجب أن يكون أقل من 5 ميجابايت',
-        variant: 'destructive',
-      });
-      return;
-    }
-
     setUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+      // Compress image before upload
+      const compressedBlob = await compressImage(file);
+      const fileName = `${Date.now()}.jpg`;
 
       const { error: uploadError } = await supabase.storage
         .from('gallery')
-        .upload(fileName, file);
+        .upload(fileName, compressedBlob, {
+          contentType: 'image/jpeg'
+        });
 
       if (uploadError) throw uploadError;
 
@@ -99,7 +144,7 @@ const Gallery = () => {
       setFormData(prev => ({ ...prev, image_url: publicUrl }));
       toast({
         title: 'تم الرفع',
-        description: 'تم رفع الصورة بنجاح',
+        description: 'تم رفع الصورة وضغطها بنجاح',
       });
     } catch (error: any) {
       console.error('Upload error:', error);
@@ -151,19 +196,20 @@ const Gallery = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title.ar || !formData.title.en || !formData.title.fr || !formData.image_url) {
+    // Only image is required
+    if (!formData.image_url) {
       toast({
         title: 'خطأ',
-        description: 'يرجى ملء جميع الحقول المطلوبة',
+        description: 'يرجى رفع صورة',
         variant: 'destructive',
       });
       return;
     }
 
     const payload = {
-      title_ar: formData.title.ar,
-      title_en: formData.title.en,
-      title_fr: formData.title.fr,
+      title_ar: formData.title.ar || 'بدون عنوان',
+      title_en: formData.title.en || 'Untitled',
+      title_fr: formData.title.fr || 'Sans titre',
       category: formData.category,
       image_url: formData.image_url,
       display_order: formData.display_order,
@@ -286,12 +332,19 @@ const Gallery = () => {
           )}
         </div>
 
-        <MultilingualInput
-          label="العنوان"
-          values={formData.title}
-          onChange={(title) => setFormData({ ...formData, title })}
-          required
-        />
+        <div className="relative">
+          <MultilingualInput
+            label="العنوان"
+            values={formData.title}
+            onChange={handleTitleChange}
+          />
+          {translating && (
+            <div className="absolute top-0 left-0 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جاري الترجمة...
+            </div>
+          )}
+        </div>
 
         <div className="space-y-2">
           <Label>التصنيف</Label>
