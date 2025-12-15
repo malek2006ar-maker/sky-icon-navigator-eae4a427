@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { useAutoTranslate } from '@/hooks/useAutoTranslate';
 import DataTable from '@/components/admin/DataTable';
 import FormDialog from '@/components/admin/FormDialog';
 import MultilingualInput from '@/components/admin/MultilingualInput';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Package } from 'lucide-react';
+import { Plus, Package, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -53,9 +55,9 @@ const defaultFormData = {
   title: { ar: '', en: '', fr: '' },
   description: { ar: '', en: '', fr: '' },
   duration: { ar: '', en: '', fr: '' },
+  features: { ar: '', en: '', fr: '' },
   price: '',
   image_url: '',
-  features: { ar: '', en: '', fr: '' },
   category: 'tourism',
   is_featured: false,
   is_active: true,
@@ -64,11 +66,17 @@ const defaultFormData = {
 
 const Packages = () => {
   const { data, isLoading, create, update, delete: deleteItem, isCreating, isUpdating } = useCrudOperations<PackageItem>('packages');
+  const { translating, createTranslateHandler } = useAutoTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PackageItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<PackageItem | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
+
+  const handleTitleChange = createTranslateHandler('title', setFormData);
+  const handleDescriptionChange = createTranslateHandler('description', setFormData);
+  const handleDurationChange = createTranslateHandler('duration', setFormData);
+  const handleFeaturesChange = createTranslateHandler('features', setFormData);
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -117,17 +125,17 @@ const Packages = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      title_ar: formData.title.ar,
-      title_en: formData.title.en,
-      title_fr: formData.title.fr,
+      title_ar: formData.title.ar || 'بدون عنوان',
+      title_en: formData.title.en || 'Untitled',
+      title_fr: formData.title.fr || 'Sans titre',
       description_ar: formData.description.ar || null,
       description_en: formData.description.en || null,
       description_fr: formData.description.fr || null,
-      duration_ar: formData.duration.ar,
-      duration_en: formData.duration.en,
-      duration_fr: formData.duration.fr,
-      price: formData.price,
-      image_url: formData.image_url,
+      duration_ar: formData.duration.ar || '-',
+      duration_en: formData.duration.en || '-',
+      duration_fr: formData.duration.fr || '-',
+      price: formData.price || '-',
+      image_url: formData.image_url || '',
       features_ar: formData.features.ar.split('\n').filter(Boolean),
       features_en: formData.features.en.split('\n').filter(Boolean),
       features_fr: formData.features.fr.split('\n').filter(Boolean),
@@ -216,26 +224,40 @@ const Packages = () => {
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
-        <MultilingualInput
-          label="العنوان"
-          values={formData.title}
-          onChange={(title) => setFormData({ ...formData, title })}
-          required
+        <ImageUpload
+          value={formData.image_url}
+          onChange={(url) => setFormData({ ...formData, image_url: url })}
+          label="صورة الباقة"
         />
+        
+        <div className="relative">
+          <MultilingualInput
+            label="العنوان"
+            values={formData.title}
+            onChange={handleTitleChange}
+          />
+          {translating && (
+            <div className="absolute top-0 left-0 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جاري الترجمة...
+            </div>
+          )}
+        </div>
+        
         <MultilingualInput
           label="الوصف"
           values={formData.description}
-          onChange={(description) => setFormData({ ...formData, description })}
+          onChange={handleDescriptionChange}
           isTextarea
         />
+        
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>السعر <span className="text-destructive">*</span></Label>
+            <Label>السعر</Label>
             <Input
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               placeholder="$999"
-              required
               dir="ltr"
             />
           </div>
@@ -255,28 +277,20 @@ const Packages = () => {
             </Select>
           </div>
         </div>
+        
         <MultilingualInput
           label="المدة"
           values={formData.duration}
-          onChange={(duration) => setFormData({ ...formData, duration })}
-          required
+          onChange={handleDurationChange}
         />
-        <div className="space-y-2">
-          <Label>رابط الصورة <span className="text-destructive">*</span></Label>
-          <Input
-            value={formData.image_url}
-            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            placeholder="https://example.com/image.jpg"
-            required
-            dir="ltr"
-          />
-        </div>
+        
         <MultilingualInput
           label="المميزات (واحدة في كل سطر)"
           values={formData.features}
-          onChange={(features) => setFormData({ ...formData, features })}
+          onChange={handleFeaturesChange}
           isTextarea
         />
+        
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label>ترتيب العرض</Label>

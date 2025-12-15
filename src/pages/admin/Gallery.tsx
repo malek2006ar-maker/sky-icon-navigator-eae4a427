@@ -1,18 +1,18 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { useAutoTranslate } from '@/hooks/useAutoTranslate';
 import DataTable from '@/components/admin/DataTable';
 import FormDialog from '@/components/admin/FormDialog';
 import MultilingualInput from '@/components/admin/MultilingualInput';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Image as ImageIcon, X, Loader2 } from 'lucide-react';
+import { Plus, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { compressImage } from '@/lib/imageCompression';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,110 +53,14 @@ const defaultFormData = {
 const Gallery = () => {
   const { toast } = useToast();
   const { data, isLoading, create, update, delete: deleteItem, isCreating, isUpdating } = useCrudOperations<GalleryItem>('gallery');
+  const { translating, createTranslateHandler } = useAutoTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<GalleryItem | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
-  const [uploading, setUploading] = useState(false);
-  const [translating, setTranslating] = useState(false);
 
-  // Auto-translate Arabic text to English and French
-  const translateText = useCallback(async (arabicText: string) => {
-    if (!arabicText.trim()) return;
-    
-    setTranslating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('translate', {
-        body: { text: arabicText, targetLanguages: ['en', 'fr'] }
-      });
-
-      if (error) throw error;
-
-      if (data?.translations) {
-        setFormData(prev => ({
-          ...prev,
-          title: {
-            ...prev.title,
-            en: data.translations.en || prev.title.en,
-            fr: data.translations.fr || prev.title.fr,
-          }
-        }));
-        toast({
-          title: 'تمت الترجمة',
-          description: 'تم ترجمة النص للإنجليزية والفرنسية تلقائياً',
-        });
-      }
-    } catch (error: any) {
-      console.error('Translation error:', error);
-      // Silent fail - user can still enter translations manually
-    } finally {
-      setTranslating(false);
-    }
-  }, [toast]);
-
-  // Handle Arabic text change with auto-translation
-  const handleTitleChange = useCallback((values: { ar: string; en: string; fr: string }) => {
-    const prevAr = formData.title.ar;
-    setFormData(prev => ({ ...prev, title: values }));
-    
-    // Auto-translate when Arabic text changes and is not empty
-    if (values.ar !== prevAr && values.ar.trim() && !values.en && !values.fr) {
-      // Debounce translation
-      const timeoutId = setTimeout(() => {
-        translateText(values.ar);
-      }, 1000);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [formData.title.ar, translateText]);
-
-  const handleUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: 'خطأ',
-        description: 'يرجى اختيار ملف صورة صالح',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setUploading(true);
-    try {
-      // Compress image before upload
-      const compressedBlob = await compressImage(file);
-      const fileName = `${Date.now()}.jpg`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('gallery')
-        .upload(fileName, compressedBlob, {
-          contentType: 'image/jpeg'
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('gallery')
-        .getPublicUrl(fileName);
-
-      setFormData(prev => ({ ...prev, image_url: publicUrl }));
-      toast({
-        title: 'تم الرفع',
-        description: 'تم رفع الصورة وضغطها بنجاح',
-      });
-    } catch (error: any) {
-      console.error('Upload error:', error);
-      toast({
-        title: 'خطأ',
-        description: error.message || 'فشل رفع الصورة',
-        variant: 'destructive',
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
+  const handleTitleChange = createTranslateHandler('title', setFormData);
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -196,7 +100,6 @@ const Gallery = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Only image is required
     if (!formData.image_url) {
       toast({
         title: 'خطأ',
@@ -286,51 +189,12 @@ const Gallery = () => {
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
-        {/* Image Upload */}
-        <div className="space-y-2">
-          <Label>الصورة <span className="text-destructive">*</span></Label>
-          {formData.image_url ? (
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden border">
-              <img
-                src={formData.image_url}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, image_url: '' }))}
-                className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full hover:bg-destructive/90"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                {uploading ? (
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                ) : (
-                  <>
-                    <ImageIcon className="w-10 h-10 mb-3 text-muted-foreground" />
-                    <p className="mb-2 text-sm text-muted-foreground">
-                      اضغط لرفع صورة
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      PNG, JPG, WEBP (حد أقصى 5 ميجابايت)
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleUploadImage}
-                disabled={uploading}
-              />
-            </label>
-          )}
-        </div>
+        <ImageUpload
+          value={formData.image_url}
+          onChange={(url) => setFormData({ ...formData, image_url: url })}
+          label="الصورة"
+          required
+        />
 
         <div className="relative">
           <MultilingualInput

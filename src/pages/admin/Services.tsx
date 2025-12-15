@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { useAutoTranslate } from '@/hooks/useAutoTranslate';
 import DataTable from '@/components/admin/DataTable';
 import FormDialog from '@/components/admin/FormDialog';
 import MultilingualInput from '@/components/admin/MultilingualInput';
@@ -8,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, Settings, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -53,11 +54,15 @@ const defaultFormData = {
 
 const Services = () => {
   const { data, isLoading, create, update, delete: deleteItem, isCreating, isUpdating } = useCrudOperations<Service>('services');
+  const { translating, createTranslateHandler } = useAutoTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Service | null>(null);
   const [itemToDelete, setItemToDelete] = useState<Service | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
+
+  const handleTitleChange = createTranslateHandler('title', setFormData);
+  const handleDescriptionChange = createTranslateHandler('description', setFormData);
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -97,9 +102,9 @@ const Services = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      title_ar: formData.title.ar,
-      title_en: formData.title.en,
-      title_fr: formData.title.fr,
+      title_ar: formData.title.ar || 'بدون عنوان',
+      title_en: formData.title.en || 'Untitled',
+      title_fr: formData.title.fr || 'Sans titre',
       description_ar: formData.description.ar || null,
       description_en: formData.description.en || null,
       description_fr: formData.description.fr || null,
@@ -169,18 +174,27 @@ const Services = () => {
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
-        <MultilingualInput
-          label="العنوان"
-          values={formData.title}
-          onChange={(title) => setFormData({ ...formData, title })}
-          required
-        />
+        <div className="relative">
+          <MultilingualInput
+            label="العنوان"
+            values={formData.title}
+            onChange={handleTitleChange}
+          />
+          {translating && (
+            <div className="absolute top-0 left-0 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جاري الترجمة...
+            </div>
+          )}
+        </div>
+        
         <MultilingualInput
           label="الوصف"
           values={formData.description}
-          onChange={(description) => setFormData({ ...formData, description })}
+          onChange={handleDescriptionChange}
           isTextarea
         />
+        
         <div className="space-y-2">
           <Label>الأيقونة</Label>
           <Select value={formData.icon} onValueChange={(icon) => setFormData({ ...formData, icon })}>
