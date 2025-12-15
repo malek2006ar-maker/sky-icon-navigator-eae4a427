@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { useAutoTranslate } from '@/hooks/useAutoTranslate';
 import DataTable from '@/components/admin/DataTable';
 import FormDialog from '@/components/admin/FormDialog';
 import MultilingualInput from '@/components/admin/MultilingualInput';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Images } from 'lucide-react';
+import { Plus, Images, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -49,11 +51,16 @@ const defaultFormData = {
 
 const Sliders = () => {
   const { data, isLoading, create, update, delete: deleteItem, isCreating, isUpdating } = useCrudOperations<Slider>('sliders');
+  const { translating, createTranslateHandler } = useAutoTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Slider | null>(null);
   const [itemToDelete, setItemToDelete] = useState<Slider | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
+
+  const handleTitleChange = createTranslateHandler('title', setFormData);
+  const handleSubtitleChange = createTranslateHandler('subtitle', setFormData);
+  const handleButtonTextChange = createTranslateHandler('button_text', setFormData);
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -95,16 +102,16 @@ const Sliders = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      title_ar: formData.title.ar,
-      title_en: formData.title.en,
-      title_fr: formData.title.fr,
+      title_ar: formData.title.ar || 'بدون عنوان',
+      title_en: formData.title.en || 'Untitled',
+      title_fr: formData.title.fr || 'Sans titre',
       subtitle_ar: formData.subtitle.ar || null,
       subtitle_en: formData.subtitle.en || null,
       subtitle_fr: formData.subtitle.fr || null,
       button_text_ar: formData.button_text.ar || null,
       button_text_en: formData.button_text.en || null,
       button_text_fr: formData.button_text.fr || null,
-      image_url: formData.image_url,
+      image_url: formData.image_url || '',
       button_link: formData.button_link || null,
       display_order: formData.display_order,
       is_active: formData.is_active,
@@ -175,32 +182,38 @@ const Sliders = () => {
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
-        <MultilingualInput
-          label="العنوان"
-          values={formData.title}
-          onChange={(title) => setFormData({ ...formData, title })}
-          required
+        <ImageUpload
+          value={formData.image_url}
+          onChange={(url) => setFormData({ ...formData, image_url: url })}
+          label="صورة الشريحة"
         />
+        
+        <div className="relative">
+          <MultilingualInput
+            label="العنوان"
+            values={formData.title}
+            onChange={handleTitleChange}
+          />
+          {translating && (
+            <div className="absolute top-0 left-0 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جاري الترجمة...
+            </div>
+          )}
+        </div>
+        
         <MultilingualInput
           label="العنوان الفرعي"
           values={formData.subtitle}
-          onChange={(subtitle) => setFormData({ ...formData, subtitle })}
+          onChange={handleSubtitleChange}
         />
-        <div className="space-y-2">
-          <Label>رابط الصورة <span className="text-destructive">*</span></Label>
-          <Input
-            value={formData.image_url}
-            onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            placeholder="https://example.com/image.jpg"
-            required
-            dir="ltr"
-          />
-        </div>
+        
         <MultilingualInput
           label="نص الزر"
           values={formData.button_text}
-          onChange={(button_text) => setFormData({ ...formData, button_text })}
+          onChange={handleButtonTextChange}
         />
+        
         <div className="space-y-2">
           <Label>رابط الزر</Label>
           <Input

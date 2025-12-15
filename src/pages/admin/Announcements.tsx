@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useCrudOperations } from '@/hooks/useCrudOperations';
+import { useAutoTranslate } from '@/hooks/useAutoTranslate';
 import DataTable from '@/components/admin/DataTable';
 import FormDialog from '@/components/admin/FormDialog';
 import MultilingualInput from '@/components/admin/MultilingualInput';
+import ImageUpload from '@/components/admin/ImageUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Megaphone } from 'lucide-react';
+import { Plus, Megaphone, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -67,11 +69,15 @@ const defaultFormData = {
 
 const Announcements = () => {
   const { data, isLoading, create, update, delete: deleteItem, isCreating, isUpdating } = useCrudOperations<Announcement>('announcements');
+  const { translating, createTranslateHandler } = useAutoTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Announcement | null>(null);
   const [itemToDelete, setItemToDelete] = useState<Announcement | null>(null);
   const [formData, setFormData] = useState(defaultFormData);
+
+  const handleTitleChange = createTranslateHandler('title', setFormData);
+  const handleDescriptionChange = createTranslateHandler('description', setFormData);
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -116,9 +122,9 @@ const Announcements = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      title_ar: formData.title.ar,
-      title_en: formData.title.en,
-      title_fr: formData.title.fr,
+      title_ar: formData.title.ar || 'بدون عنوان',
+      title_en: formData.title.en || 'Untitled',
+      title_fr: formData.title.fr || 'Sans titre',
       description_ar: formData.description.ar || null,
       description_en: formData.description.en || null,
       description_fr: formData.description.fr || null,
@@ -217,18 +223,27 @@ const Announcements = () => {
         onSubmit={handleSubmit}
         isLoading={isCreating || isUpdating}
       >
-        <MultilingualInput
-          label="العنوان"
-          values={formData.title}
-          onChange={(title) => setFormData({ ...formData, title })}
-          required
-        />
+        <div className="relative">
+          <MultilingualInput
+            label="العنوان"
+            values={formData.title}
+            onChange={handleTitleChange}
+          />
+          {translating && (
+            <div className="absolute top-0 left-0 flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              جاري الترجمة...
+            </div>
+          )}
+        </div>
+        
         <MultilingualInput
           label="الوصف"
           values={formData.description}
-          onChange={(description) => setFormData({ ...formData, description })}
+          onChange={handleDescriptionChange}
           isTextarea
         />
+        
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>نوع الوسائط</Label>
@@ -261,15 +276,25 @@ const Announcements = () => {
             </Select>
           </div>
         </div>
-        <div className="space-y-2">
-          <Label>رابط الوسائط</Label>
-          <Input
+        
+        {formData.media_type === 'image' ? (
+          <ImageUpload
             value={formData.media_url}
-            onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
-            placeholder={formData.media_type === 'video' ? 'رابط فيديو يوتيوب' : 'https://example.com/image.jpg'}
-            dir="ltr"
+            onChange={(url) => setFormData({ ...formData, media_url: url })}
+            label="صورة الإعلان"
           />
-        </div>
+        ) : (
+          <div className="space-y-2">
+            <Label>رابط الفيديو</Label>
+            <Input
+              value={formData.media_url}
+              onChange={(e) => setFormData({ ...formData, media_url: e.target.value })}
+              placeholder="رابط فيديو يوتيوب"
+              dir="ltr"
+            />
+          </div>
+        )}
+        
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>تاريخ البدء</Label>
