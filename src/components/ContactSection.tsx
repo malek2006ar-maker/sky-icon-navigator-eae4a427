@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 export const ContactSection = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, language, isRTL } = useLanguage();
+  const { settings } = useSiteSettings();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,7 +20,6 @@ export const ContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     toast({
@@ -30,29 +31,34 @@ export const ContactSection = () => {
     (e.target as HTMLFormElement).reset();
   };
 
+  const address = language === 'ar' ? settings.contact.address_ar : 
+                  language === 'fr' ? settings.contact.address_fr : settings.contact.address_en;
+  
+  const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
+
   const contactInfo = [
     {
       icon: MapPin,
       label: t.contact.address,
-      value: t.contact.addressValue,
+      value: address || t.contact.addressValue,
     },
     {
       icon: Phone,
       label: isRTL ? 'الهاتف' : 'Phone',
-      value: '+967 783 003 636',
-      link: 'tel:+967783003636',
+      value: settings.contact.phone || '+967 783 003 636',
+      link: `tel:${(settings.contact.phone || '+967783003636').replace(/\s/g, '')}`,
     },
     {
       icon: Mail,
       label: isRTL ? 'البريد الإلكتروني' : 'Email',
-      value: 'info@skyicon.com',
-      link: 'mailto:info@skyicon.com',
+      value: settings.contact.email || 'info@skyicon.com',
+      link: `mailto:${settings.contact.email || 'info@skyicon.com'}`,
     },
     {
       icon: MessageCircle,
       label: 'WhatsApp',
-      value: '+967 783 003 636',
-      link: 'https://wa.me/967783003636',
+      value: settings.contact.whatsapp || '+967 783 003 636',
+      link: `https://wa.me/${whatsappNumber}`,
     },
   ];
 
@@ -187,25 +193,6 @@ export const ContactSection = () => {
                 )}
               </motion.div>
             ))}
-
-            {/* Additional contact numbers */}
-            <div className="bg-muted rounded-2xl p-6">
-              <h4 className="font-bold text-foreground mb-4">
-                {isRTL ? 'أرقام إضافية' : 'Additional Numbers'}
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                {['783003838', '783003939', '101127338'].map((num) => (
-                  <a
-                    key={num}
-                    href={`tel:+967${num}`}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-secondary transition-colors ltr-nums"
-                  >
-                    <Phone size={16} />
-                    {num}
-                  </a>
-                ))}
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>

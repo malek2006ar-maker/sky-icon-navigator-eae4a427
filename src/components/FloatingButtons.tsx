@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, ChevronUp } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
 export const FloatingButtons = () => {
   const { isRTL } = useLanguage();
+  const { settings } = useSiteSettings();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -18,6 +20,8 @@ export const FloatingButtons = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
 
   return (
     <div className={`fixed bottom-6 ${isRTL ? 'left-6' : 'right-6'} z-40 flex flex-col gap-3`}>
@@ -38,7 +42,7 @@ export const FloatingButtons = () => {
 
       {/* WhatsApp Button */}
       <motion.a
-        href="https://wa.me/967783003636"
+        href={`https://wa.me/${whatsappNumber}`}
         target="_blank"
         rel="noopener noreferrer"
         initial={{ scale: 0 }}
