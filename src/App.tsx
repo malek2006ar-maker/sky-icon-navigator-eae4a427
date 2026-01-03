@@ -14,6 +14,7 @@ import Services from "./pages/admin/Services";
 import Packages from "./pages/admin/Packages";
 import Announcements from "./pages/admin/Announcements";
 import Gallery from "./pages/admin/Gallery";
+import Settings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="packages" element={<Packages />} />
               <Route path="announcements" element={<Announcements />} />
               <Route path="gallery" element={<Gallery />} />
+              <Route path="settings" element={<Settings />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
