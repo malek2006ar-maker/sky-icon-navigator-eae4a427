@@ -36,6 +36,14 @@ export const ContactSection = () => {
   
   const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
 
+  // Build phone numbers array
+  const officePhones = [
+    settings.contact.phone,
+    settings.contact.phone2,
+    settings.contact.phone3,
+    settings.contact.phone4,
+  ].filter(Boolean);
+
   const contactInfo = [
     {
       icon: MapPin,
@@ -44,10 +52,17 @@ export const ContactSection = () => {
     },
     {
       icon: Phone,
-      label: isRTL ? 'الهاتف' : 'Phone',
-      value: settings.contact.phone || '+967 783 003 636',
-      link: `tel:${(settings.contact.phone || '+967783003636').replace(/\s/g, '')}`,
+      label: isRTL ? 'أرقام المكتب' : 'Office Phones',
+      value: officePhones.length > 0 ? officePhones.join(' | ') : '+967 783 003 636',
+      phones: officePhones.length > 0 ? officePhones : ['+967 783 003 636'],
+      isMultiPhone: true,
     },
+    ...(settings.contact.admin_phone ? [{
+      icon: Phone,
+      label: isRTL ? 'جوال المدير' : 'Admin Phone',
+      value: settings.contact.admin_phone,
+      link: `tel:${settings.contact.admin_phone.replace(/\s/g, '')}`,
+    }] : []),
     {
       icon: Mail,
       label: isRTL ? 'البريد الإلكتروني' : 'Email',
@@ -57,7 +72,7 @@ export const ContactSection = () => {
     {
       icon: MessageCircle,
       label: 'WhatsApp',
-      value: settings.contact.whatsapp || '+967 783 003 636',
+      value: settings.contact.whatsapp || '+967 775 222 520',
       link: `https://wa.me/${whatsappNumber}`,
     },
   ];
@@ -165,7 +180,27 @@ export const ContactSection = () => {
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.1 * index }}
               >
-                {item.link ? (
+                {'isMultiPhone' in item && item.isMultiPhone ? (
+                  <div className="flex items-start gap-4 p-6 bg-card rounded-2xl shadow-soft">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-gold flex items-center justify-center shrink-0">
+                      <item.icon className="w-7 h-7 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-foreground mb-2">{item.label}</h4>
+                      <div className="space-y-1">
+                        {('phones' in item ? item.phones : []).map((phone: string, i: number) => (
+                          <a
+                            key={i}
+                            href={`tel:${phone.replace(/\s/g, '')}`}
+                            className="block text-muted-foreground ltr-nums hover:text-secondary transition-colors"
+                          >
+                            {phone}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : 'link' in item && item.link ? (
                   <a
                     href={item.link}
                     target={item.link.startsWith('http') ? '_blank' : undefined}

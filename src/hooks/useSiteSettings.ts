@@ -10,6 +10,10 @@ interface LogoSettings {
 
 interface ContactSettings {
   phone: string;
+  phone2?: string;
+  phone3?: string;
+  phone4?: string;
+  admin_phone?: string;
   email: string;
   address_ar: string;
   address_en: string;
