@@ -82,12 +82,36 @@ export const Footer = () => {
           <div>
             <h4 className="font-bold text-lg mb-6 font-playfair">{t.footer.contactInfo}</h4>
             <ul className="space-y-4 text-primary-foreground/80 text-end">
-              {settings.contact.phone && (
+              {/* Office Phones */}
+              {(settings.contact.phone || settings.contact.phone2 || settings.contact.phone3 || settings.contact.phone4) && (
                 <li className="ltr-nums">
                   <strong className="block text-primary-foreground mb-1">
-                    {isRTL ? 'الهاتف:' : 'Phone:'}
+                    {isRTL ? 'أرقام المكتب:' : 'Office Phones:'}
                   </strong>
-                  {settings.contact.phone}
+                  <div className="space-y-1">
+                    {settings.contact.phone && <div>{settings.contact.phone}</div>}
+                    {settings.contact.phone2 && <div>{settings.contact.phone2}</div>}
+                    {settings.contact.phone3 && <div>{settings.contact.phone3}</div>}
+                    {settings.contact.phone4 && <div>{settings.contact.phone4}</div>}
+                  </div>
+                </li>
+              )}
+              {/* Admin Phone */}
+              {settings.contact.admin_phone && (
+                <li className="ltr-nums">
+                  <strong className="block text-primary-foreground mb-1">
+                    {isRTL ? 'جوال المدير:' : 'Admin Phone:'}
+                  </strong>
+                  {settings.contact.admin_phone}
+                </li>
+              )}
+              {/* WhatsApp */}
+              {settings.contact.whatsapp && (
+                <li className="ltr-nums">
+                  <strong className="block text-primary-foreground mb-1">
+                    {isRTL ? 'واتساب:' : 'WhatsApp:'}
+                  </strong>
+                  {settings.contact.whatsapp}
                 </li>
               )}
               {settings.contact.email && (
