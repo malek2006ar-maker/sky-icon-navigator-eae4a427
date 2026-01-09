@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Images, Package, Settings, Megaphone, TrendingUp } from 'lucide-react';
+import { Images, Package, Settings, Megaphone, TrendingUp, MessageSquareQuote, Image as ImageIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard = () => {
@@ -34,6 +34,22 @@ const Dashboard = () => {
     queryKey: ['announcements-count'],
     queryFn: async () => {
       const { count } = await supabase.from('announcements').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const { data: galleryCount, isLoading: loadingGallery } = useQuery({
+    queryKey: ['gallery-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('gallery').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const { data: testimonialsCount, isLoading: loadingTestimonials } = useQuery({
+    queryKey: ['testimonials-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('testimonials').select('*', { count: 'exact', head: true });
       return count || 0;
     },
   });
@@ -70,6 +86,22 @@ const Dashboard = () => {
       icon: Megaphone, 
       color: 'bg-orange-500',
       link: '/admin/announcements'
+    },
+    { 
+      title: 'معرض الصور', 
+      value: galleryCount, 
+      loading: loadingGallery, 
+      icon: ImageIcon, 
+      color: 'bg-pink-500',
+      link: '/admin/gallery'
+    },
+    { 
+      title: 'الشهادات', 
+      value: testimonialsCount, 
+      loading: loadingTestimonials, 
+      icon: MessageSquareQuote, 
+      color: 'bg-teal-500',
+      link: '/admin/testimonials'
     },
   ];
 
