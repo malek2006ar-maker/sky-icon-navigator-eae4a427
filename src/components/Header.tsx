@@ -28,8 +28,8 @@ export const Header = () => {
     { label: t.nav.contact, href: '#contact' }
   ];
 
-  const phoneNumber = settings.contact.phone || '+967 783 003 636';
-  const phoneLink = `tel:${phoneNumber.replace(/\s/g, '')}`;
+  const adminPhone = settings.contact.admin_phone || '+967 777 180 875';
+  const adminPhoneLink = `tel:${adminPhone.replace(/\s/g, '')}`;
   const logoUrl = settings.logo.url || '/logo.png';
   const logoAlt = language === 'ar' ? settings.logo.alt_ar : 
                   language === 'fr' ? settings.logo.alt_fr : settings.logo.alt_en;
@@ -60,9 +60,9 @@ export const Header = () => {
           <div className="flex items-center gap-3">
             <LanguageToggle isScrolled={isScrolled} />
             
-            <a href={phoneLink} className="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-full font-semibold hover:bg-secondary/90 transition-colors shadow-gold">
+            <a href={adminPhoneLink} className="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-full font-semibold hover:bg-secondary/90 transition-colors shadow-gold">
               <Phone size={16} />
-              <span className="ltr-nums">{phoneNumber}</span>
+              <span className="ltr-nums">{adminPhone}</span>
             </a>
 
             {/* Mobile Menu Button */}
@@ -96,9 +96,9 @@ export const Header = () => {
                   {item.label}
                 </a>
               ))}
-              <a href={phoneLink} className="flex items-center justify-center gap-2 px-4 py-3 bg-secondary text-secondary-foreground rounded-full font-semibold mt-2">
+              <a href={adminPhoneLink} className="flex items-center justify-center gap-2 px-4 py-3 bg-secondary text-secondary-foreground rounded-full font-semibold mt-2">
                 <Phone size={16} />
-                <span className="ltr-nums">{phoneNumber}</span>
+                <span className="ltr-nums">{adminPhone}</span>
               </a>
             </nav>
           </motion.div>
