@@ -3,35 +3,97 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
+// Fallback images
 import heroHajj from '@/assets/hero-hajj.jpg';
 import heroThailand from '@/assets/hero-thailand.jpg';
 import heroUmrah from '@/assets/hero-umrah.jpg';
 
+interface Slider {
+  id: string;
+  title_ar: string;
+  title_en: string;
+  title_fr: string;
+  subtitle_ar: string | null;
+  subtitle_en: string | null;
+  subtitle_fr: string | null;
+  image_url: string;
+  button_text_ar: string | null;
+  button_text_en: string | null;
+  button_text_fr: string | null;
+  button_link: string | null;
+  display_order: number;
+  is_active: boolean;
+}
+
 export const HeroSlider = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, language, isRTL } = useLanguage();
+  const { settings } = useSiteSettings();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
+  const { data: slidersData } = useQuery({
+    queryKey: ['sliders'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('sliders')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as Slider[];
+    },
+  });
+
+  // Fallback slides
+  const fallbackSlides = [
     {
       image: heroHajj,
       title: t.hero.slide1.title,
       subtitle: t.hero.slide1.subtitle,
       cta: t.hero.slide1.cta,
+      link: '#packages',
     },
     {
       image: heroUmrah,
       title: t.hero.slide2.title,
       subtitle: t.hero.slide2.subtitle,
       cta: t.hero.slide2.cta,
+      link: '#packages',
     },
     {
       image: heroThailand,
       title: t.hero.slide3.title,
       subtitle: t.hero.slide3.subtitle,
       cta: t.hero.slide3.cta,
+      link: '#packages',
     },
   ];
+
+  const getLocalizedText = (item: Slider, field: 'title' | 'subtitle' | 'button_text') => {
+    const arField = `${field}_ar` as keyof Slider;
+    const enField = `${field}_en` as keyof Slider;
+    const frField = `${field}_fr` as keyof Slider;
+    
+    switch (language) {
+      case 'ar': return item[arField] as string;
+      case 'fr': return item[frField] as string;
+      default: return item[enField] as string;
+    }
+  };
+
+  const slides = slidersData && slidersData.length > 0
+    ? slidersData.map(item => ({
+        image: item.image_url,
+        title: getLocalizedText(item, 'title'),
+        subtitle: getLocalizedText(item, 'subtitle') || '',
+        cta: getLocalizedText(item, 'button_text') || (isRTL ? 'احجز الآن' : 'Book Now'),
+        link: item.button_link || '#packages',
+      }))
+    : fallbackSlides;
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -45,6 +107,27 @@ export const HeroSlider = () => {
     const timer = setInterval(nextSlide, 6000);
     return () => clearInterval(timer);
   }, [nextSlide]);
+
+  // Reset slide index if slides change
+  useEffect(() => {
+    if (currentSlide >= slides.length) {
+      setCurrentSlide(0);
+    }
+  }, [slides.length, currentSlide]);
+
+  const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
+
+  const handleCTAClick = (link: string) => {
+    if (link.startsWith('#')) {
+      document.querySelector(link)?.scrollIntoView({ behavior: 'smooth' });
+    } else if (link.startsWith('http')) {
+      window.open(link, '_blank');
+    } else {
+      // Default to WhatsApp
+      const message = encodeURIComponent(isRTL ? 'مرحباً، أود الاستفسار عن خدماتكم' : 'Hello, I would like to inquire about your services');
+      window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+    }
+  };
 
   return (
     <section id="home" className="relative h-screen min-h-[600px] overflow-hidden">
@@ -102,6 +185,7 @@ export const HeroSlider = () => {
               >
                 <Button
                   size="lg"
+                  onClick={() => handleCTAClick(slides[currentSlide].link)}
                   className="bg-secondary text-secondary-foreground hover:bg-secondary/90 text-lg px-8 py-6 rounded-full font-semibold shadow-gold pulse-glow"
                 >
                   {slides[currentSlide].cta}

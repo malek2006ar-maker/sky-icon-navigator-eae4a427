@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Images, Package, Settings, Megaphone, TrendingUp, MessageSquareQuote, Image as ImageIcon } from 'lucide-react';
+import { Images, Package, Settings, Megaphone, TrendingUp, MessageSquareQuote, Image as ImageIcon, BarChart3 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const Dashboard = () => {
@@ -50,6 +50,14 @@ const Dashboard = () => {
     queryKey: ['testimonials-count'],
     queryFn: async () => {
       const { count } = await supabase.from('testimonials').select('*', { count: 'exact', head: true });
+      return count || 0;
+    },
+  });
+
+  const { data: statsCount, isLoading: loadingStats } = useQuery({
+    queryKey: ['stats-count'],
+    queryFn: async () => {
+      const { count } = await supabase.from('stats').select('*', { count: 'exact', head: true });
       return count || 0;
     },
   });
@@ -102,6 +110,14 @@ const Dashboard = () => {
       icon: MessageSquareQuote, 
       color: 'bg-teal-500',
       link: '/admin/testimonials'
+    },
+    { 
+      title: 'الإحصائيات', 
+      value: statsCount, 
+      loading: loadingStats, 
+      icon: BarChart3, 
+      color: 'bg-indigo-500',
+      link: '/admin/stats'
     },
   ];
 
