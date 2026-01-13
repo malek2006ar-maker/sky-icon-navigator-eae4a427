@@ -13,7 +13,8 @@ import {
   Home,
   Image as ImageIcon,
   Cog,
-  MessageSquareQuote
+  MessageSquareQuote,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -25,6 +26,7 @@ const navItems = [
   { to: '/admin/announcements', icon: Megaphone, label: 'الإعلانات' },
   { to: '/admin/gallery', icon: ImageIcon, label: 'معرض الصور' },
   { to: '/admin/testimonials', icon: MessageSquareQuote, label: 'الشهادات' },
+  { to: '/admin/stats', icon: BarChart3, label: 'الإحصائيات' },
   { to: '/admin/settings', icon: Cog, label: 'الإعدادات' },
 ];
 

@@ -2,20 +2,70 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Calendar, MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Calendar, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useSiteSettings } from '@/hooks/useSiteSettings';
 
+// Fallback images
 import heroHajj from '@/assets/hero-hajj.jpg';
 import heroThailand from '@/assets/hero-thailand.jpg';
 import galleryMalaysia from '@/assets/gallery-malaysia.jpg';
 import galleryJordan from '@/assets/gallery-jordan.jpg';
 
+interface PackageItem {
+  id: string;
+  title_ar: string;
+  title_en: string;
+  title_fr: string;
+  description_ar: string | null;
+  description_en: string | null;
+  description_fr: string | null;
+  price: string;
+  duration_ar: string;
+  duration_en: string;
+  duration_fr: string;
+  image_url: string;
+  is_featured: boolean;
+  is_active: boolean;
+  display_order: number;
+}
+
 export const PackagesSection = () => {
-  const { t, isRTL } = useLanguage();
+  const { t, language, isRTL } = useLanguage();
+  const { settings } = useSiteSettings();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  const packages = [
+  const { data: packagesData } = useQuery({
+    queryKey: ['packages'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('packages')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
+      return data as PackageItem[];
+    },
+  });
+
+  const getLocalizedText = (item: PackageItem, field: 'title' | 'description' | 'duration') => {
+    const arField = `${field}_ar` as keyof PackageItem;
+    const enField = `${field}_en` as keyof PackageItem;
+    const frField = `${field}_fr` as keyof PackageItem;
+    
+    switch (language) {
+      case 'ar': return item[arField] as string;
+      case 'fr': return item[frField] as string;
+      default: return item[enField] as string;
+    }
+  };
+
+  // Fallback packages
+  const fallbackPackages = [
     {
       image: heroHajj,
       title: t.packages.ramadanUmrah.title,
@@ -49,6 +99,29 @@ export const PackagesSection = () => {
       featured: false,
     },
   ];
+
+  const packages = packagesData && packagesData.length > 0
+    ? packagesData.map(item => ({
+        id: item.id,
+        image: item.image_url,
+        title: getLocalizedText(item, 'title'),
+        description: getLocalizedText(item, 'description') || '',
+        duration: getLocalizedText(item, 'duration'),
+        price: item.price,
+        featured: item.is_featured,
+      }))
+    : fallbackPackages;
+
+  const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
+
+  const handleBookNow = (packageTitle: string) => {
+    const message = encodeURIComponent(
+      isRTL 
+        ? `مرحباً، أود الاستفسار والحجز في باقة: ${packageTitle}`
+        : `Hello, I would like to inquire and book: ${packageTitle}`
+    );
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+  };
 
   return (
     <section id="packages" className="py-20 lg:py-32 bg-muted" ref={ref}>
@@ -119,6 +192,7 @@ export const PackagesSection = () => {
                     </div>
                     <Button
                       size="sm"
+                      onClick={() => handleBookNow(pkg.title)}
                       className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full"
                     >
                       {t.packages.bookNow}

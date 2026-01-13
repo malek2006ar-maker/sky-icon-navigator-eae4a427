@@ -341,6 +341,54 @@ export type Database = {
         }
         Relationships: []
       }
+      stats: {
+        Row: {
+          created_at: string
+          display_order: number
+          icon: string
+          id: string
+          is_active: boolean
+          label_ar: string
+          label_en: string
+          label_fr: string
+          suffix_ar: string | null
+          suffix_en: string | null
+          suffix_fr: string | null
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label_ar: string
+          label_en: string
+          label_fr: string
+          suffix_ar?: string | null
+          suffix_en?: string | null
+          suffix_fr?: string | null
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label_ar?: string
+          label_en?: string
+          label_fr?: string
+          suffix_ar?: string | null
+          suffix_en?: string | null
+          suffix_fr?: string | null
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
       testimonials: {
         Row: {
           avatar_url: string | null
