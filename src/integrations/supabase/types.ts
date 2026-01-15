@@ -74,6 +74,66 @@ export type Database = {
         }
         Relationships: []
       }
+      automation_logs: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          error_message: string | null
+          id: string
+          platform: string
+          response: Json | null
+          status: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform: string
+          response?: Json | null
+          status?: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          platform?: string
+          response?: Json | null
+          status?: string
+        }
+        Relationships: []
+      }
+      automation_settings: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          is_enabled: boolean
+          platform: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          platform: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          platform?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery: {
         Row: {
           category: string
