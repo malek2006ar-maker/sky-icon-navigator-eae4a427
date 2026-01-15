@@ -17,6 +17,7 @@ import Gallery from "./pages/admin/Gallery";
 import Testimonials from "./pages/admin/Testimonials";
 import Stats from "./pages/admin/Stats";
 import Settings from "./pages/admin/Settings";
+import Automation from "./pages/admin/Automation";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="testimonials" element={<Testimonials />} />
               <Route path="stats" element={<Stats />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="automation" element={<Automation />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
