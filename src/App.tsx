@@ -18,6 +18,9 @@ import Testimonials from "./pages/admin/Testimonials";
 import Stats from "./pages/admin/Stats";
 import Settings from "./pages/admin/Settings";
 import Automation from "./pages/admin/Automation";
+import ServicePricing from "./pages/admin/ServicePricing";
+import YemeniaFlights from "./pages/admin/YemeniaFlights";
+import ExternalLinks from "./pages/admin/ExternalLinks";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +45,9 @@ const App = () => (
               <Route path="stats" element={<Stats />} />
               <Route path="settings" element={<Settings />} />
               <Route path="automation" element={<Automation />} />
+              <Route path="service-pricing" element={<ServicePricing />} />
+              <Route path="yemenia-flights" element={<YemeniaFlights />} />
+              <Route path="external-links" element={<ExternalLinks />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
