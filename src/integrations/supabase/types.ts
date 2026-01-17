@@ -134,6 +134,57 @@ export type Database = {
         }
         Relationships: []
       }
+      external_links: {
+        Row: {
+          category: string
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          description_fr: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          thumbnail_url: string | null
+          title_ar: string
+          title_en: string
+          title_fr: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          thumbnail_url?: string | null
+          title_ar: string
+          title_en: string
+          title_fr: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          thumbnail_url?: string | null
+          title_ar?: string
+          title_en?: string
+          title_fr?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       gallery: {
         Row: {
           category: string
@@ -274,6 +325,65 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      service_pricing: {
+        Row: {
+          created_at: string
+          currency: string
+          description_ar: string | null
+          description_en: string | null
+          description_fr: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          price: number
+          service_id: string | null
+          tier_name_ar: string
+          tier_name_en: string
+          tier_name_fr: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          price: number
+          service_id?: string | null
+          tier_name_ar: string
+          tier_name_en: string
+          tier_name_fr: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          price?: number
+          service_id?: string | null
+          tier_name_ar?: string
+          tier_name_en?: string
+          tier_name_fr?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_pricing_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
@@ -527,9 +637,133 @@ export type Database = {
         }
         Relationships: []
       }
+      yemenia_flights: {
+        Row: {
+          arrival_city_ar: string
+          arrival_city_en: string
+          arrival_city_fr: string
+          arrival_time: string
+          created_at: string
+          currency: string
+          days_of_week: string[]
+          departure_city_ar: string
+          departure_city_en: string
+          departure_city_fr: string
+          departure_time: string
+          display_order: number
+          flight_number: string
+          id: string
+          is_active: boolean
+          notes_ar: string | null
+          notes_en: string | null
+          notes_fr: string | null
+          price: number | null
+          updated_at: string
+        }
+        Insert: {
+          arrival_city_ar: string
+          arrival_city_en: string
+          arrival_city_fr: string
+          arrival_time: string
+          created_at?: string
+          currency?: string
+          days_of_week?: string[]
+          departure_city_ar: string
+          departure_city_en: string
+          departure_city_fr: string
+          departure_time: string
+          display_order?: number
+          flight_number: string
+          id?: string
+          is_active?: boolean
+          notes_ar?: string | null
+          notes_en?: string | null
+          notes_fr?: string | null
+          price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          arrival_city_ar?: string
+          arrival_city_en?: string
+          arrival_city_fr?: string
+          arrival_time?: string
+          created_at?: string
+          currency?: string
+          days_of_week?: string[]
+          departure_city_ar?: string
+          departure_city_en?: string
+          departure_city_fr?: string
+          departure_time?: string
+          display_order?: number
+          flight_number?: string
+          id?: string
+          is_active?: boolean
+          notes_ar?: string | null
+          notes_en?: string | null
+          notes_fr?: string | null
+          price?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      service_pricing_public: {
+        Row: {
+          created_at: string | null
+          currency: string | null
+          description_ar: string | null
+          description_en: string | null
+          description_fr: string | null
+          display_order: number | null
+          id: string | null
+          is_active: boolean | null
+          price: number | null
+          service_id: string | null
+          tier_name_ar: string | null
+          tier_name_en: string | null
+          tier_name_fr: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          currency?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          display_order?: number | null
+          id?: string | null
+          is_active?: boolean | null
+          price?: never
+          service_id?: string | null
+          tier_name_ar?: string | null
+          tier_name_en?: string | null
+          tier_name_fr?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          currency?: string | null
+          description_ar?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          display_order?: number | null
+          id?: string | null
+          is_active?: boolean | null
+          price?: never
+          service_id?: string | null
+          tier_name_ar?: string | null
+          tier_name_en?: string | null
+          tier_name_fr?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_pricing_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {

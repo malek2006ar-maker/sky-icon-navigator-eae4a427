@@ -15,7 +15,9 @@ import {
   Cog,
   MessageSquareQuote,
   BarChart3,
-  Bot
+  Bot,
+  DollarSign,
+  Link2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -23,11 +25,14 @@ const navItems = [
   { to: '/admin', icon: LayoutDashboard, label: 'لوحة التحكم', end: true },
   { to: '/admin/sliders', icon: Images, label: 'الشرائح' },
   { to: '/admin/services', icon: Settings, label: 'الخدمات' },
+  { to: '/admin/service-pricing', icon: DollarSign, label: 'أسعار الخدمات' },
   { to: '/admin/packages', icon: Package, label: 'الباقات' },
+  { to: '/admin/yemenia-flights', icon: Plane, label: 'رحلات اليمنية' },
   { to: '/admin/announcements', icon: Megaphone, label: 'الإعلانات' },
   { to: '/admin/gallery', icon: ImageIcon, label: 'معرض الصور' },
   { to: '/admin/testimonials', icon: MessageSquareQuote, label: 'الشهادات' },
   { to: '/admin/stats', icon: BarChart3, label: 'الإحصائيات' },
+  { to: '/admin/external-links', icon: Link2, label: 'روابط خارجية' },
   { to: '/admin/automation', icon: Bot, label: 'الأتمتة' },
   { to: '/admin/settings', icon: Cog, label: 'الإعدادات' },
 ];
