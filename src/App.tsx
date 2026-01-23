@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
@@ -30,28 +31,30 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="sliders" element={<Sliders />} />
-              <Route path="services" element={<Services />} />
-              <Route path="packages" element={<Packages />} />
-              <Route path="announcements" element={<Announcements />} />
-              <Route path="gallery" element={<Gallery />} />
-              <Route path="testimonials" element={<Testimonials />} />
-              <Route path="stats" element={<Stats />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="automation" element={<Automation />} />
-              <Route path="service-pricing" element={<ServicePricing />} />
-              <Route path="yemenia-flights" element={<YemeniaFlights />} />
-              <Route path="external-links" element={<ExternalLinks />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="sliders" element={<Sliders />} />
+                <Route path="services" element={<Services />} />
+                <Route path="packages" element={<Packages />} />
+                <Route path="announcements" element={<Announcements />} />
+                <Route path="gallery" element={<Gallery />} />
+                <Route path="testimonials" element={<Testimonials />} />
+                <Route path="stats" element={<Stats />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="automation" element={<Automation />} />
+                <Route path="service-pricing" element={<ServicePricing />} />
+                <Route path="yemenia-flights" element={<YemeniaFlights />} />
+                <Route path="external-links" element={<ExternalLinks />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
