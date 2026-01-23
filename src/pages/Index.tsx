@@ -13,6 +13,7 @@ import { Header } from '@/components/Header';
 import { HeroSlider } from '@/components/HeroSlider';
 import { ServicesSection } from '@/components/ServicesSection';
 import { ServicePricingSection } from '@/components/ServicePricingSection';
+import { YemeniaFlightsSection } from '@/components/YemeniaFlightsSection';
 import { PackagesSection } from '@/components/PackagesSection';
 import { StatsSection } from '@/components/StatsSection';
 import { GallerySection } from '@/components/GallerySection';
@@ -30,6 +31,7 @@ const Index = () => {
           <HeroSlider />
           <ServicesSection />
           <ServicePricingSection />
+          <YemeniaFlightsSection />
           <PackagesSection />
           <StatsSection />
           <GallerySection />
