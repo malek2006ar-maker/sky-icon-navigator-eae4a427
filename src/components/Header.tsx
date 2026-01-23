@@ -1,13 +1,18 @@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useState, useEffect } from 'react';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X, Phone, UserPlus, LogOut, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LanguageToggle } from './LanguageToggle';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Button } from './ui/button';
 
 export const Header = () => {
   const { t, language } = useLanguage();
   const { settings } = useSiteSettings();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -34,6 +39,19 @@ export const Header = () => {
   const logoAlt = language === 'ar' ? settings.logo.alt_ar : 
                   language === 'fr' ? settings.logo.alt_fr : settings.logo.alt_en;
 
+  const authLabel = language === 'ar' ? 'تسجيل الدخول' : language === 'fr' ? 'Connexion' : 'Sign In';
+  const logoutLabel = language === 'ar' ? 'خروج' : language === 'fr' ? 'Déconnexion' : 'Sign Out';
+
+  const handleAuthClick = () => {
+    navigate('/auth?tab=signup');
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-card/95 backdrop-blur-md shadow-elevated' : 'bg-transparent'}`}>
       <div className="container mx-auto px-4">
@@ -59,6 +77,29 @@ export const Header = () => {
           {/* Actions */}
           <div className="flex items-center gap-3">
             <LanguageToggle isScrolled={isScrolled} />
+            
+            {/* Auth Button */}
+            {user ? (
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className={`hidden md:flex items-center gap-2 ${isScrolled ? 'border-border' : 'border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10'}`}
+              >
+                <LogOut size={16} />
+                <span>{logoutLabel}</span>
+              </Button>
+            ) : (
+              <Button
+                onClick={handleAuthClick}
+                variant="outline"
+                size="sm"
+                className={`hidden md:flex items-center gap-2 ${isScrolled ? 'border-border' : 'border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10'}`}
+              >
+                <UserPlus size={16} />
+                <span>{authLabel}</span>
+              </Button>
+            )}
             
             <a href={adminPhoneLink} className="hidden md:flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-full font-semibold hover:bg-secondary/90 transition-colors shadow-gold">
               <Phone size={16} />
@@ -96,6 +137,26 @@ export const Header = () => {
                   {item.label}
                 </a>
               ))}
+              
+              {/* Mobile Auth Button */}
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium text-foreground hover:bg-muted transition-colors"
+                >
+                  <LogOut size={18} />
+                  {logoutLabel}
+                </button>
+              ) : (
+                <button
+                  onClick={handleAuthClick}
+                  className="flex items-center gap-2 px-4 py-3 rounded-lg font-medium text-secondary hover:bg-muted transition-colors"
+                >
+                  <UserPlus size={18} />
+                  {authLabel}
+                </button>
+              )}
+              
               <a href={adminPhoneLink} className="flex items-center justify-center gap-2 px-4 py-3 bg-secondary text-secondary-foreground rounded-full font-semibold mt-2">
                 <Phone size={16} />
                 <span className="ltr-nums">{adminPhone}</span>
