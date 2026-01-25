@@ -24,7 +24,7 @@ export const Footer = () => {
     { label: t.nav.contact, href: '#contact' }
   ];
 
-  const logoUrl = settings.logo.url || '/lovable-uploads/781b01c2-0fdc-4126-b90c-c4eb70d1a4cb.png';
+  const logoUrl = settings.logo.url || '/logo.png';
   const address = language === 'ar' ? settings.contact.address_ar : 
                   language === 'fr' ? settings.contact.address_fr : settings.contact.address_en;
 
