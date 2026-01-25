@@ -107,11 +107,11 @@ export const Footer = () => {
               )}
               {/* WhatsApp */}
               {settings.contact.whatsapp && (
-                <li className="ltr-nums">
-                  <strong className="block text-primary-foreground mb-1">
+                <li className="ltr-nums" dir="ltr">
+                  <strong className="block text-primary-foreground mb-1" dir={isRTL ? 'rtl' : 'ltr'}>
                     {isRTL ? 'واتساب:' : 'WhatsApp:'}
                   </strong>
-                  {settings.contact.whatsapp}
+                  <span dir="ltr">{settings.contact.whatsapp}</span>
                 </li>
               )}
               {settings.contact.email && (
