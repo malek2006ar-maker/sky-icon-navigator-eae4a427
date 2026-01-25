@@ -72,8 +72,9 @@ export const ContactSection = () => {
     {
       icon: MessageCircle,
       label: 'WhatsApp',
-      value: settings.contact.whatsapp || '+967 775 222 520',
+      value: settings.contact.whatsapp || '+967 783 003 636',
       link: `https://wa.me/${whatsappNumber}`,
+      isLTR: true,
     },
   ];
 
@@ -212,7 +213,7 @@ export const ContactSection = () => {
                     </div>
                     <div>
                       <h4 className="font-bold text-foreground mb-1">{item.label}</h4>
-                      <p className="text-muted-foreground ltr-nums">{item.value}</p>
+                      <p className={`text-muted-foreground ${'isLTR' in item && item.isLTR ? 'ltr-nums text-start' : 'ltr-nums'}`} dir={'isLTR' in item && item.isLTR ? 'ltr' : undefined}>{item.value}</p>
                     </div>
                   </a>
                 ) : (
