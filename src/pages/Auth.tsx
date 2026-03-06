@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plane, DollarSign, Lock, User, Mail } from 'lucide-react';
 import { z } from 'zod';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const emailSchema = z.string().email('البريد الإلكتروني غير صالح');
 const passwordSchema = z.string().min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل');
@@ -292,6 +293,35 @@ const Auth = () => {
                   {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   {t.signInBtn}
                 </Button>
+                <div className="text-center mt-2">
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="text-sm text-muted-foreground"
+                    onClick={async () => {
+                      if (!signInEmail) {
+                        toast({
+                          title: isRTL ? 'أدخل البريد الإلكتروني أولاً' : language === 'fr' ? 'Entrez votre email d\'abord' : 'Enter your email first',
+                          variant: 'destructive',
+                        });
+                        return;
+                      }
+                      const { error } = await supabase.auth.resetPasswordForEmail(signInEmail, {
+                        redirectTo: `${window.location.origin}/reset-password`,
+                      });
+                      if (error) {
+                        toast({ title: error.message, variant: 'destructive' });
+                      } else {
+                        toast({
+                          title: isRTL ? 'تم الإرسال' : language === 'fr' ? 'Email envoyé' : 'Email sent',
+                          description: isRTL ? 'تحقق من بريدك الإلكتروني لإعادة تعيين كلمة المرور' : language === 'fr' ? 'Vérifiez votre email' : 'Check your email to reset your password',
+                        });
+                      }
+                    }}
+                  >
+                    {isRTL ? 'نسيت كلمة المرور؟' : language === 'fr' ? 'Mot de passe oublié ?' : 'Forgot password?'}
+                  </Button>
+                </div>
               </form>
             </TabsContent>
             
