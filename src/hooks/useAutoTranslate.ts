@@ -11,7 +11,7 @@ interface MultilingualValue {
 export function useAutoTranslate() {
   const { toast } = useToast();
   const [translating, setTranslating] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const translateText = useCallback(async (arabicText: string): Promise<{ en: string; fr: string } | null> => {
     if (!arabicText.trim()) return null;
