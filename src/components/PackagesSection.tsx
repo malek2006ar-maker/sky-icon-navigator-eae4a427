@@ -191,7 +191,7 @@ export const PackagesSection = () => {
                     </div>
                     <Button
                       size="sm"
-                      onClick={() => handleBookNow(pkg.title)}
+                      onClick={() => handleBookNow(pkg.title, pkg.price)}
                       className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full"
                     >
                       {t.packages.bookNow}
