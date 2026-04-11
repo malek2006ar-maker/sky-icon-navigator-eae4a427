@@ -134,6 +134,45 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          notes: string | null
+          package_price: string | null
+          package_title: string
+          status: Database["public"]["Enums"]["booking_status"]
+          travelers_count: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          notes?: string | null
+          package_price?: string | null
+          package_title: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          travelers_count?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          notes?: string | null
+          package_price?: string | null
+          package_title?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          travelers_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       external_links: {
         Row: {
           category: string
@@ -776,6 +815,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      booking_status: "pending" | "confirmed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -904,6 +944,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      booking_status: ["pending", "confirmed", "cancelled"],
     },
   },
 } as const
