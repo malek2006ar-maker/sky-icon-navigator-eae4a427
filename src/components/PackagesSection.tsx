@@ -114,15 +114,12 @@ export const PackagesSection = () => {
       }))
     : fallbackPackages;
 
-  const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<{ title: string; price: string }>({ title: '', price: '' });
 
-  const handleBookNow = (packageTitle: string) => {
-    const message = encodeURIComponent(
-      isRTL 
-        ? `مرحباً، أود الاستفسار والحجز في باقة: ${packageTitle}`
-        : `Hello, I would like to inquire and book: ${packageTitle}`
-    );
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+  const handleBookNow = (packageTitle: string, packagePrice: string) => {
+    setSelectedPkg({ title: packageTitle, price: packagePrice });
+    setBookingOpen(true);
   };
 
   return (
