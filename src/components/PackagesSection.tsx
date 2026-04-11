@@ -2,8 +2,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { useState } from 'react';
 import { Calendar, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { BookingDialog } from '@/components/BookingDialog';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
@@ -112,15 +114,12 @@ export const PackagesSection = () => {
       }))
     : fallbackPackages;
 
-  const whatsappNumber = settings.contact.whatsapp?.replace(/\D/g, '') || '967783003636';
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedPkg, setSelectedPkg] = useState<{ title: string; price: string }>({ title: '', price: '' });
 
-  const handleBookNow = (packageTitle: string) => {
-    const message = encodeURIComponent(
-      isRTL 
-        ? `مرحباً، أود الاستفسار والحجز في باقة: ${packageTitle}`
-        : `Hello, I would like to inquire and book: ${packageTitle}`
-    );
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+  const handleBookNow = (packageTitle: string, packagePrice: string) => {
+    setSelectedPkg({ title: packageTitle, price: packagePrice });
+    setBookingOpen(true);
   };
 
   return (
@@ -192,7 +191,7 @@ export const PackagesSection = () => {
                     </div>
                     <Button
                       size="sm"
-                      onClick={() => handleBookNow(pkg.title)}
+                      onClick={() => handleBookNow(pkg.title, pkg.price)}
                       className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full"
                     >
                       {t.packages.bookNow}
@@ -204,6 +203,13 @@ export const PackagesSection = () => {
             </motion.div>
           ))}
         </div>
+
+        <BookingDialog
+          open={bookingOpen}
+          onOpenChange={setBookingOpen}
+          packageTitle={selectedPkg.title}
+          packagePrice={selectedPkg.price}
+        />
       </div>
     </section>
   );
