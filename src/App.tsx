@@ -23,6 +23,7 @@ import Automation from "./pages/admin/Automation";
 import ServicePricing from "./pages/admin/ServicePricing";
 import YemeniaFlights from "./pages/admin/YemeniaFlights";
 import ExternalLinks from "./pages/admin/ExternalLinks";
+import Bookings from "./pages/admin/Bookings";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
                 <Route path="service-pricing" element={<ServicePricing />} />
                 <Route path="yemenia-flights" element={<YemeniaFlights />} />
                 <Route path="external-links" element={<ExternalLinks />} />
+                <Route path="bookings" element={<Bookings />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

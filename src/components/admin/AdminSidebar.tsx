@@ -17,7 +17,8 @@ import {
   BarChart3,
   Bot,
   DollarSign,
-  Link2
+  Link2,
+  CalendarCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -27,6 +28,7 @@ const navItems = [
   { to: '/admin/services', icon: Settings, label: 'الخدمات' },
   { to: '/admin/service-pricing', icon: DollarSign, label: 'أسعار الخدمات' },
   { to: '/admin/packages', icon: Package, label: 'الباقات' },
+  { to: '/admin/bookings', icon: CalendarCheck, label: 'الحجوزات' },
   { to: '/admin/yemenia-flights', icon: Plane, label: 'رحلات اليمنية' },
   { to: '/admin/announcements', icon: Megaphone, label: 'الإعلانات' },
   { to: '/admin/gallery', icon: ImageIcon, label: 'معرض الصور' },
