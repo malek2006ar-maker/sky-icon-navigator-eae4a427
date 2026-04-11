@@ -203,6 +203,13 @@ export const PackagesSection = () => {
             </motion.div>
           ))}
         </div>
+
+        <BookingDialog
+          open={bookingOpen}
+          onOpenChange={setBookingOpen}
+          packageTitle={selectedPkg.title}
+          packagePrice={selectedPkg.price}
+        />
       </div>
     </section>
   );
