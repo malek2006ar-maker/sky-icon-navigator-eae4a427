@@ -22,7 +22,11 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  Loader2
+  Loader2,
+  Eye,
+  EyeOff,
+  Trash2,
+  RefreshCw
 } from 'lucide-react';
 
 interface AutomationSetting {
@@ -109,6 +113,7 @@ const Automation = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [configs, setConfigs] = useState<Record<string, Record<string, string>>>({});
+  const [revealed, setRevealed] = useState<Record<string, boolean>>({});
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['automation-settings'],
@@ -224,6 +229,21 @@ const Automation = () => {
     });
   };
 
+  const handleClearTokens = (platformId: string) => {
+    const platform = platformConfig.find(p => p.id === platformId);
+    if (!platform) return;
+    const cleared: Record<string, string> = { ...(configs[platformId] || {}) };
+    platform.fields.forEach(f => {
+      if (f.type === 'password') cleared[f.key] = '';
+    });
+    setConfigs(prev => ({ ...prev, [platformId]: cleared }));
+    toast({ title: 'تم مسح التوكنات', description: 'لا تنسَ الضغط على "حفظ" لتأكيد التغيير.' });
+  };
+
+  const toggleReveal = (key: string) => {
+    setRevealed(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const getSettingForPlatform = (platform: string) => {
     return settings?.find(s => s.platform === platform);
   };
@@ -310,16 +330,54 @@ const Automation = () => {
                     {platform.fields.map((field) => (
                       <div key={field.key} className="space-y-2">
                         <Label htmlFor={`${platform.id}-${field.key}`}>{field.label}</Label>
-                        <Input
-                          id={`${platform.id}-${field.key}`}
-                          type={field.type}
-                          placeholder={field.placeholder}
-                          value={configs[platform.id]?.[field.key] || ''}
-                          onChange={(e) => handleConfigChange(platform.id, field.key, e.target.value)}
-                          dir="ltr"
-                        />
+                        {field.type === 'password' ? (
+                          <div className="relative">
+                            <Input
+                              id={`${platform.id}-${field.key}`}
+                              type={revealed[`${platform.id}-${field.key}`] ? 'text' : 'password'}
+                              placeholder={field.placeholder}
+                              value={configs[platform.id]?.[field.key] || ''}
+                              onChange={(e) => handleConfigChange(platform.id, field.key, e.target.value)}
+                              dir="ltr"
+                              autoComplete="new-password"
+                              className="pl-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                              onClick={() => toggleReveal(`${platform.id}-${field.key}`)}
+                              tabIndex={-1}
+                            >
+                              {revealed[`${platform.id}-${field.key}`] ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+                        ) : (
+                          <Input
+                            id={`${platform.id}-${field.key}`}
+                            type={field.type}
+                            placeholder={field.placeholder}
+                            value={configs[platform.id]?.[field.key] || ''}
+                            onChange={(e) => handleConfigChange(platform.id, field.key, e.target.value)}
+                            dir="ltr"
+                          />
+                        )}
                       </div>
                     ))}
+                    {setting?.updated_at && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <RefreshCw className="h-3 w-3" />
+                        آخر تحديث: {new Date(setting.updated_at).toLocaleString('ar-EG', {
+                          year: 'numeric', month: 'short', day: 'numeric',
+                          hour: '2-digit', minute: '2-digit'
+                        })}
+                      </p>
+                    )}
                     <div className="flex gap-2 pt-2">
                       <Button 
                         onClick={() => handleSave(platform.id)}
@@ -334,6 +392,15 @@ const Automation = () => {
                         disabled={testMutation.isPending || !setting?.is_enabled}
                       >
                         {testMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : 'اختبار'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleClearTokens(platform.id)}
+                        title="مسح التوكنات (للتدوير)"
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </CardContent>
