@@ -26,7 +26,8 @@ import {
   Eye,
   EyeOff,
   Trash2,
-  RefreshCw
+  RefreshCw,
+  PlayCircle
 } from 'lucide-react';
 
 interface AutomationSetting {
@@ -114,6 +115,8 @@ const Automation = () => {
   const queryClient = useQueryClient();
   const [configs, setConfigs] = useState<Record<string, Record<string, string>>>({});
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
+  const [testingAll, setTestingAll] = useState(false);
+  const [testingPlatform, setTestingPlatform] = useState<string | null>(null);
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ['automation-settings'],
@@ -201,6 +204,64 @@ const Automation = () => {
       toast({ title: 'خطأ', description: error.message, variant: 'destructive' });
     }
   });
+
+  const testPlatform = async (platform: string): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/social-publish`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+        },
+        body: JSON.stringify({
+          platform,
+          test: true,
+          message: '🎉 اختبار النشر التلقائي من Sky Icon Travel'
+        })
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        return { ok: false, error: err.error || `HTTP ${response.status}` };
+      }
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : 'unknown' };
+    }
+  };
+
+  const handleTestAll = async () => {
+    const enabled = (settings || []).filter(s => s.is_enabled);
+    if (enabled.length === 0) {
+      toast({
+        title: 'لا توجد منصات مفعّلة',
+        description: 'فعّل منصة واحدة على الأقل قبل الاختبار.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    setTestingAll(true);
+    const results: { platform: string; ok: boolean; error?: string }[] = [];
+    for (const s of enabled) {
+      setTestingPlatform(s.platform);
+      const r = await testPlatform(s.platform);
+      results.push({ platform: s.platform, ...r });
+    }
+    setTestingPlatform(null);
+    setTestingAll(false);
+    queryClient.invalidateQueries({ queryKey: ['automation-logs'] });
+
+    const success = results.filter(r => r.ok).length;
+    const failed = results.length - success;
+    const lines = results.map(r => {
+      const name = platformConfig.find(p => p.id === r.platform)?.name || r.platform;
+      return r.ok ? `✅ ${name}` : `❌ ${name}: ${r.error}`;
+    });
+    toast({
+      title: `اكتمل الاختبار: ${success} نجاح / ${failed} فشل`,
+      description: lines.join(' • '),
+      variant: failed > 0 ? 'destructive' : 'default'
+    });
+  };
 
   const handleConfigChange = (platform: string, key: string, value: string) => {
     setConfigs(prev => ({
@@ -290,16 +351,33 @@ const Automation = () => {
       </div>
 
       <Tabs defaultValue="settings" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="settings" className="gap-2">
-            <Settings2 className="h-4 w-4" />
-            الإعدادات
-          </TabsTrigger>
-          <TabsTrigger value="logs" className="gap-2">
-            <History className="h-4 w-4" />
-            سجل النشر
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <TabsList>
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings2 className="h-4 w-4" />
+              الإعدادات
+            </TabsTrigger>
+            <TabsTrigger value="logs" className="gap-2">
+              <History className="h-4 w-4" />
+              سجل النشر
+            </TabsTrigger>
+          </TabsList>
+          <Button
+            onClick={handleTestAll}
+            disabled={testingAll}
+            variant="secondary"
+            className="gap-2"
+          >
+            {testingAll ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <PlayCircle className="h-4 w-4" />
+            )}
+            {testingAll
+              ? `جارٍ اختبار ${platformConfig.find(p => p.id === testingPlatform)?.name || ''}...`
+              : 'اختبار الكل'}
+          </Button>
+        </div>
 
         <TabsContent value="settings" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
