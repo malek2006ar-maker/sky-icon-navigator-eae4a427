@@ -177,11 +177,14 @@ const Automation = () => {
 
   const testMutation = useMutation({
     mutationFn: async (platform: string) => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) throw new Error('يجب تسجيل الدخول');
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/social-publish`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           platform,
@@ -207,11 +210,14 @@ const Automation = () => {
 
   const testPlatform = async (platform: string): Promise<{ ok: boolean; error?: string }> => {
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) return { ok: false, error: 'يجب تسجيل الدخول' };
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/social-publish`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           platform,
