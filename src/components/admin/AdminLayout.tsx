@@ -15,7 +15,7 @@ const AdminLayout = () => {
     );
   }
 
-  if (!user) {
+  if (!user || !isAdmin) {
     return <Navigate to="/auth" replace />;
   }
 
