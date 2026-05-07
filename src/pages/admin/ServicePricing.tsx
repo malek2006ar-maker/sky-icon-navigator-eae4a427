@@ -251,12 +251,12 @@ const ServicePricing = () => {
       >
         <div className="space-y-2">
           <Label>الخدمة</Label>
-          <Select value={formData.service_id} onValueChange={(v) => setFormData({ ...formData, service_id: v })}>
+          <Select value={formData.service_id || 'general'} onValueChange={(v) => setFormData({ ...formData, service_id: v === 'general' ? '' : v })}>
             <SelectTrigger>
               <SelectValue placeholder="اختر الخدمة" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">عام</SelectItem>
+              <SelectItem value="general">عام</SelectItem>
               {services.map((s) => (
                 <SelectItem key={s.id} value={s.id}>{s.title_ar}</SelectItem>
               ))}
