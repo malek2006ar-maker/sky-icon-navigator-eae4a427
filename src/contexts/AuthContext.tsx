@@ -57,13 +57,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Defer admin check with setTimeout to avoid deadlock
         if (session?.user) {
+          setLoading(true);
           setTimeout(() => {
-            checkAdminRole(session.user.id).then(setIsAdmin);
+            checkAdminRole(session.user.id).then((result) => {
+              setIsAdmin(result);
+              setLoading(false);
+            });
           }, 0);
         } else {
           setIsAdmin(false);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
@@ -73,9 +77,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        checkAdminRole(session.user.id).then(setIsAdmin);
+        checkAdminRole(session.user.id).then((result) => {
+          setIsAdmin(result);
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
