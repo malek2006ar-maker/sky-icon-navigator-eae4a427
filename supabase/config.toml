@@ -1,1 +1,4 @@
 project_id = "cnspokooyupcjgxbmeqa"
+
+[functions.site-assistant]
+verify_jwt = false
