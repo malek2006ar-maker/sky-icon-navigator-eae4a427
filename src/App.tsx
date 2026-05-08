@@ -24,6 +24,7 @@ import ServicePricing from "./pages/admin/ServicePricing";
 import YemeniaFlights from "./pages/admin/YemeniaFlights";
 import ExternalLinks from "./pages/admin/ExternalLinks";
 import Bookings from "./pages/admin/Bookings";
+import ChatAssistant from "@/components/ChatAssistant";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +58,7 @@ const App = () => (
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <ChatAssistant />
           </AuthProvider>
         </LanguageProvider>
       </BrowserRouter>
