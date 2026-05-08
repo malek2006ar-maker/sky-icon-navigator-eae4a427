@@ -130,7 +130,7 @@ export const HeroSlider = () => {
   };
 
   return (
-    <section id="home" className="relative h-screen min-h-[600px] overflow-hidden">
+    <section id="home" className="relative min-h-[480px] sm:min-h-[560px] h-[85vh] sm:h-screen overflow-hidden">
       {/* Slides */}
       <AnimatePresence mode="wait">
         <motion.div
@@ -163,7 +163,7 @@ export const HeroSlider = () => {
               className={`max-w-3xl ${isRTL ? 'text-right' : 'text-left'}`}
             >
               <motion.h2
-                className="font-playfair text-4xl md:text-5xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight"
+                className="font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-primary-foreground mb-4 sm:mb-6 leading-tight"
                 initial={{ opacity: 0, x: isRTL ? 50 : -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
@@ -171,7 +171,7 @@ export const HeroSlider = () => {
                 {slides[currentSlide].title}
               </motion.h2>
               <motion.p
-                className="text-xl md:text-2xl text-primary-foreground/90 mb-8"
+                className="text-base sm:text-xl md:text-2xl text-primary-foreground/90 mb-6 sm:mb-8"
                 initial={{ opacity: 0, x: isRTL ? 50 : -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}

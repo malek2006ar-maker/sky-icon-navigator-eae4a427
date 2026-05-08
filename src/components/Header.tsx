@@ -167,13 +167,13 @@ export const Header = () => {
       </AnimatePresence>
 
       {/* Tagline Banner */}
-      <div className={`w-full py-3 transition-all duration-300 ${isScrolled ? 'bg-navy-800' : 'bg-navy-900/90 backdrop-blur-sm'}`}>
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-gold-400">
+      <div className={`w-full py-2 sm:py-3 transition-all duration-300 ${isScrolled ? 'bg-navy-800' : 'bg-navy-900/90 backdrop-blur-sm'}`}>
+        <div className="container mx-auto px-3 sm:px-4 text-center">
+          <h2 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-gold-400 leading-snug">
             سكاي ايكون للسفريات والسياحة وخدمات الحج والعمرة
           </h2>
-          <p className="text-sm md:text-base lg:text-lg font-semibold text-gold-300 mt-1">
-            Sky Icon for Travel, Tourism, Hajj & Umrah Services
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-gold-300 mt-0.5 sm:mt-1 leading-snug">
+            Sky Icon for Travel, Tourism, Hajj &amp; Umrah Services
           </p>
         </div>
       </div>
