@@ -19,6 +19,7 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [checking, setChecking] = useState(true);
 
   const t = {
     ar: {
@@ -60,20 +61,63 @@ const ResetPassword = () => {
   }[language];
 
   useEffect(() => {
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const type = hashParams.get('type');
-    if (type === 'recovery') {
-      setIsRecovery(true);
-    }
+    let cancelled = false;
+
+    const init = async () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const queryParams = new URLSearchParams(window.location.search);
+      const type = hashParams.get('type') || queryParams.get('type');
+      const code = queryParams.get('code');
+      const errorDesc = hashParams.get('error_description') || queryParams.get('error_description');
+
+      if (errorDesc) {
+        if (!cancelled) setChecking(false);
+        return;
+      }
+
+      // PKCE flow: exchange the ?code= for a session
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!cancelled && !error) {
+          setIsRecovery(true);
+          setChecking(false);
+          return;
+        }
+      }
+
+      if (type === 'recovery') {
+        if (!cancelled) {
+          setIsRecovery(true);
+          setChecking(false);
+        }
+        return;
+      }
+
+      // If we already have a session (e.g. implicit flow auto-set it), allow reset
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!cancelled && session) {
+        setIsRecovery(true);
+        setChecking(false);
+        return;
+      }
+
+      if (!cancelled) setChecking(false);
+    };
+
+    init();
 
     // Also listen for PASSWORD_RECOVERY event
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
         setIsRecovery(true);
+        setChecking(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,6 +143,14 @@ const ResetPassword = () => {
       navigate('/auth');
     }
   };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!isRecovery) {
     return (
