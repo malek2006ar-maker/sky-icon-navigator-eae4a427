@@ -20,7 +20,6 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
   const [checking, setChecking] = useState(true);
-  const [linkError, setLinkError] = useState('');
 
   const t = {
     ar: {
@@ -68,7 +67,6 @@ const ResetPassword = () => {
       if (cancelled) return;
       setIsRecovery(true);
       setChecking(false);
-      setLinkError('');
       window.history.replaceState(null, '', '/reset-password');
     };
 
@@ -124,7 +122,7 @@ const ResetPassword = () => {
       if (await hasActiveSession()) return;
 
       if (!cancelled) {
-        setLinkError(errorDesc || 'invalid');
+        console.warn('Password reset link was rejected:', errorDesc || 'invalid');
         setChecking(false);
       }
     };
