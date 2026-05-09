@@ -108,9 +108,11 @@ const ResetPassword = () => {
 
     // Also listen for PASSWORD_RECOVERY event
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
-        setIsRecovery(true);
-        setChecking(false);
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        if (session) {
+          setIsRecovery(true);
+          setChecking(false);
+        }
       }
     });
 
