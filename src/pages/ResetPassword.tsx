@@ -63,58 +63,71 @@ const ResetPassword = () => {
   useEffect(() => {
     let cancelled = false;
 
+    const allowPasswordReset = () => {
+      if (cancelled) return;
+      setIsRecovery(true);
+      setChecking(false);
+      window.history.replaceState(null, '', '/reset-password');
+    };
+
+    const hasActiveSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        allowPasswordReset();
+        return true;
+      }
+      return false;
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        allowPasswordReset();
+      }
+    });
+
     const init = async () => {
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const queryParams = new URLSearchParams(window.location.search);
       const type = hashParams.get('type') || queryParams.get('type');
       const code = queryParams.get('code');
+      const tokenHash = hashParams.get('token_hash') || queryParams.get('token_hash') || hashParams.get('token') || queryParams.get('token');
+      const accessToken = hashParams.get('access_token');
+      const refreshToken = hashParams.get('refresh_token');
       const errorDesc = hashParams.get('error_description') || queryParams.get('error_description');
 
-      if (errorDesc) {
-        if (!cancelled) setChecking(false);
-        return;
-      }
-
-      // PKCE flow: exchange the ?code= for a session
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!cancelled && !error) {
-          setIsRecovery(true);
-          setChecking(false);
+      if (accessToken && refreshToken) {
+        const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+        if (!error) {
+          allowPasswordReset();
           return;
         }
       }
 
-      if (type === 'recovery') {
-        if (!cancelled) {
-          setIsRecovery(true);
-          setChecking(false);
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (!error) {
+          allowPasswordReset();
+          return;
         }
-        return;
       }
 
-      // If we already have a session (e.g. implicit flow auto-set it), allow reset
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!cancelled && session) {
-        setIsRecovery(true);
+      if (type === 'recovery' && tokenHash) {
+        const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+        if (!error) {
+          allowPasswordReset();
+          return;
+        }
+      }
+
+      if (await hasActiveSession()) return;
+
+      if (!cancelled) {
+        console.warn('Password reset link was rejected:', errorDesc || 'invalid');
         setChecking(false);
-        return;
       }
-
-      if (!cancelled) setChecking(false);
     };
 
     init();
-
-    // Also listen for PASSWORD_RECOVERY event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        if (session) {
-          setIsRecovery(true);
-          setChecking(false);
-        }
-      }
-    });
 
     return () => {
       cancelled = true;
